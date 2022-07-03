@@ -4,7 +4,7 @@ from string import digits, uppercase
 from PyQt4 import QtCore, QtGui
 from bigglesworth.utils import load_ui
 
-TEXT, PDF = range(2)
+TEXT, PDF = list(range(2))
 
 class PrinterOutsideWidget(QtGui.QWidget):
     def __init__(self, parent=None):
@@ -395,7 +395,7 @@ class PrintDialog(QtGui.QDialog):
                 self.pdf_print()
                 break
             except Exception as e:
-                print e
+                print(e)
                 QtGui.QMessageBox.critical(self, 'Error saving the file', 'There was a problem saving the file.\nBe sure to have write permissions and sufficient free space for the selected path.')
 
     def pdf_print(self):

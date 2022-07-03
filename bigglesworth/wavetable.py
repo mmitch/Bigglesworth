@@ -43,10 +43,10 @@ pow16 = 2**16
 pow14 = 2**14
 pow12 = 2**12
 
-DRAW_FREE, DRAW_LINE, DRAW_CURVE = range(3)
-REVERSE_WAVES, REVERSE_VALUES, REVERSE_FULL, INVERT_VALUES, SHUFFLE_WAVES, SINE_WAVES, CLEAR_WAVES, INTERPOLATE_VALUES, MORPH_WAVES, DROP_WAVE, DROP_WAVE_SOURCE, WAVETABLE_IMPORT, SLOT_CHANGE, NAME_CHANGE = (16 + i for i in xrange(14))
+DRAW_FREE, DRAW_LINE, DRAW_CURVE = list(range(3))
+REVERSE_WAVES, REVERSE_VALUES, REVERSE_FULL, INVERT_VALUES, SHUFFLE_WAVES, SINE_WAVES, CLEAR_WAVES, INTERPOLATE_VALUES, MORPH_WAVES, DROP_WAVE, DROP_WAVE_SOURCE, WAVETABLE_IMPORT, SLOT_CHANGE, NAME_CHANGE = (16 + i for i in range(14))
 
-sine128 = tuple(sin(2 * pi * r * (0.0078125)) for r in xrange(128))
+sine128 = tuple(sin(2 * pi * r * (0.0078125)) for r in range(128))
 
 def compute_sqrt_curve(t):
 #   original function:
@@ -92,7 +92,7 @@ class UndoDialog(QtGui.QDialog):
         original = QtGui.QStandardItem('Initial state')
         setBoldItalic(original, True, False)
         self.undo_model.appendRow(original)
-        for u in xrange(self.undo.count()):
+        for u in range(self.undo.count()):
             cmd = self.undo.command(u)
             item = QtGui.QStandardItem(cmd.text())
 #            item.setData(cmd, undoRole)
@@ -103,7 +103,7 @@ class UndoDialog(QtGui.QDialog):
             self.undo_model.appendRow(item)
 
     def indexChanged(self, index):
-        for i in xrange(self.undo_model.rowCount()):
+        for i in range(self.undo_model.rowCount()):
             item = self.undo_model.item(i, 0)
             if i > index:
                 setBoldItalic(item, False, True)
@@ -187,11 +187,11 @@ class MultiWaveUndo(QtGui.QUndoCommand):
             self.values_dict[wave_obj].append(wave_obj.values[:])
 
     def undo(self):
-        for wave_obj, values in self.values_dict.items():
+        for wave_obj, values in list(self.values_dict.items()):
             wave_obj.setValues(values[0])
 
     def redo(self):
-        for wave_obj, values in self.values_dict.items():
+        for wave_obj, values in list(self.values_dict.items()):
             wave_obj.setValues(values[1])
 
 
@@ -505,7 +505,7 @@ class WaveSourceView(QtGui.QGraphicsView):
         self.cache = {}
         self.offset = self.offset_pos = 0
 
-        self.zoom_values = tuple(2**e for e in xrange(2, 10))
+        self.zoom_values = tuple(2**e for e in range(2, 10))
         self.zoom = self.zoom_values.index(256)
 
         self.split_waves = []
@@ -514,7 +514,7 @@ class WaveSourceView(QtGui.QGraphicsView):
         self.left_margin = self.wave_pen.width()*.25
         self.grid = QtGui.QGraphicsItemGroup()
         self.grid.setZValue(2)
-        for i in xrange(4096):
+        for i in range(4096):
             wave = self.scene().addRect(i*2, 0, 2, split_height)
             self.grid.addToGroup(wave)
             wave.setFlags(QtGui.QGraphicsItem.ItemIsSelectable)
@@ -616,9 +616,9 @@ class WaveSourceView(QtGui.QGraphicsView):
             self.current_data = data
             wavepath = QtGui.QPainterPath()
             try:
-                for frame_set in xrange(ratio):
+                for frame_set in range(ratio):
                     frame_min = frame_max = 0
-                    for frame in xrange(64):
+                    for frame in range(64):
                         try:
                             value = audioop.getsample(data, sampwidth, frame + frame_set * 64)
                             frame_min = min(frame_min, value)
@@ -657,7 +657,7 @@ class WaveSourceView(QtGui.QGraphicsView):
         path = QtGui.QPainterPath()
         sampwidth_int = self.current_sampwidth_int / 2
         path.moveTo(0, sampwidth_int - audioop.getsample(samples, self.current_sampwidth, 0))
-        for s in xrange(1, len(samples)/2):
+        for s in range(1, len(samples)/2):
             path.lineTo(s, sampwidth_int - audioop.getsample(samples, self.current_sampwidth, s))
         wave_size = self.main.wavetable_view.width() / 64
         pixmap = QtGui.QPixmap(wave_size * wave_len, 48)
@@ -716,7 +716,7 @@ class WaveSourceView(QtGui.QGraphicsView):
                 self.scene().removeItem(self.current_samplepath)
                 current_sample = audioop.getsample(self.current_data, self.current_sampwidth, index_delta + self.offset)
                 current_path.moveTo(index_pos, self.current_sampwidth_int - current_sample)
-                for sample in xrange(128):
+                for sample in range(128):
                     try:
                         value = audioop.getsample(self.current_data, self.current_sampwidth, index_delta + sample + self.offset)
                         current_path.lineTo(index_pos + sample/64., self.current_sampwidth_int - value)
@@ -732,10 +732,10 @@ class WaveSourceView(QtGui.QGraphicsView):
                     next_value = audioop.getsample(self.current_data, self.current_sampwidth, (index + 1) * 128 + self.offset)
                     samplepath.moveTo((index + 1) * 2, self.current_sampwidth_int - next_value)
                 except Exception as e:
-                    print type(e), e
+                    print(type(e), e)
                     pass
                 continue
-            for sample in xrange(128):
+            for sample in range(128):
                 try:
                     value = audioop.getsample(self.current_data, self.current_sampwidth, index_delta + sample + self.offset)
                     samplepath.lineTo(index_pos + sample/64., self.current_sampwidth_int - value)
@@ -946,7 +946,7 @@ class WaveObject(QtCore.QObject):
         self.values = []
         self.preview_path = QtGui.QPainterPath()
         self.path = QtGui.QPainterPath()
-        for p in xrange(128):
+        for p in range(128):
             self.values.append(0)
             self.preview_path.lineTo(p, 0)
             self.path.lineTo(p*16384, 0)
@@ -959,20 +959,20 @@ class WaveObject(QtCore.QObject):
     def interpolate(self, stat_range=3):
         values = []
         delta = (stat_range - 1) / 2
-        for c in xrange(128):
+        for c in range(128):
             stats = []
             if c - delta < 0:
-                for i in xrange(delta):
+                for i in range(delta):
                     stats.append(self.values[127 - delta + i])
             else:
-                for i in xrange(delta):
+                for i in range(delta):
                     stats.append(self.values[c - delta + i])
             stats.append(self.values[c])
             if c + delta > 127:
-                for i in xrange(delta):
+                for i in range(delta):
                     stats.append(self.values[i])
             else:
-                for i in xrange(delta):
+                for i in range(delta):
                     stats.append(self.values[c + delta + i])
             values.append(int(float(sum(stats)) / stat_range))
         self.setValues(values)
@@ -1194,12 +1194,12 @@ class WaveTableView(QtGui.QGraphicsView):
             elif res == selectall:
                 for r in self.waveobj_list:
                     r.preview_rect.setSelected(True)
-                self.selection = list(xrange(64))
+                self.selection = list(range(64))
 
 #    Hey, what about decorators?!
     def reverse_waves(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[0]:selection[-1] + 1]
         self.editAction.emit(REVERSE_WAVES, True, waveobj_list)
         values_list = [wave_obj.values for wave_obj in reversed(waveobj_list)]
@@ -1209,7 +1209,7 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def reverse_wave_values(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[0]:selection[-1] + 1]
         self.editAction.emit(REVERSE_VALUES, True, waveobj_list)
         for wave_obj in waveobj_list:
@@ -1218,7 +1218,7 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def reverse_full(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[0]:selection[-1] + 1]
         self.editAction.emit(REVERSE_FULL, True, waveobj_list)
         self.blockSignals(True)
@@ -1229,7 +1229,7 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def invert_waves(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[0]:selection[-1] + 1]
         self.editAction.emit(INVERT_VALUES, True, waveobj_list)
         for wave_obj in waveobj_list:
@@ -1238,17 +1238,17 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def morph_waves(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[1]:selection[-1]]
         self.editAction.emit(MORPH_WAVES, True, waveobj_list)
-        interpolation = [[] for i in xrange(len(waveobj_list))]
+        interpolation = [[] for i in range(len(waveobj_list))]
         div = selection[-1] - selection[0] + 1
         values_first = iter(self.waveobj_list[selection[0]].values)
         values_last = iter(self.waveobj_list[selection[-1]].values)
-        for s in xrange(128):
-            first = values_first.next()
-            ratio = (values_last.next() - first) / div
-            for w in xrange(div - 2):
+        for s in range(128):
+            first = next(values_first)
+            ratio = (next(values_last) - first) / div
+            for w in range(div - 2):
                 interpolation[w].append(first + (w + 1) * ratio)
         for w, wave_obj in enumerate(waveobj_list):
             wave_obj.setValues(interpolation[w])
@@ -1256,8 +1256,8 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def shuffle_waves(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
-            shuffled = tuple(xrange(64))
+            selection = tuple(range(64))
+            shuffled = tuple(range(64))
         else:
             shuffled = selection[:]
         shuffle(shuffled)
@@ -1270,7 +1270,7 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def sine_waves(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[0]:selection[-1] + 1]
         self.editAction.emit(SINE_WAVES, True, waveobj_list)
         for wave_obj in waveobj_list:
@@ -1279,7 +1279,7 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def clear_waves(self, selection=None):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[0]:selection[-1] + 1]
         self.editAction.emit(CLEAR_WAVES, True, waveobj_list)
         for wave_obj in waveobj_list:
@@ -1288,7 +1288,7 @@ class WaveTableView(QtGui.QGraphicsView):
 
     def interpolate_values(self, selection=None, stat_range=3):
         if not selection:
-            selection = tuple(xrange(64))
+            selection = tuple(range(64))
         waveobj_list = self.waveobj_list[selection[0]:selection[-1] + 1]
         self.editAction.emit(INTERPOLATE_VALUES, True, waveobj_list)
         for wave_obj in waveobj_list:
@@ -1332,7 +1332,7 @@ class WaveTableView(QtGui.QGraphicsView):
             wave_len = int(len(data) * 0.00390625)
         elif event.mimeData().hasFormat('audio/waves'):
             data = event.mimeData().data('audio/waves')
-            start, end = map(int, str(data).split(':'))
+            start, end = list(map(int, str(data).split(':')))
             wave_len = end - start + 1
         else:
             event.ignore()
@@ -1362,9 +1362,9 @@ class WaveTableView(QtGui.QGraphicsView):
             data = mimedata.data('audio/wavesamples')
             slice_range = len(data) / 256
             self.dropAction.emit(DROP_WAVE, True, self.waveobj_list[index:index + slice_range], '"{}"'.format(mimedata.text()))
-            for w in xrange(slice_range):
+            for w in range(slice_range):
                 values = []
-                for s in xrange(128):
+                for s in range(128):
                     values.append(audioop.getsample(data, 2, w * 128 + s) * 31)
                 self.waveobj_list[index + w].setValues(values)
             for r in self.waveobj_list:
@@ -1372,7 +1372,7 @@ class WaveTableView(QtGui.QGraphicsView):
             self.dropAction.emit(DROP_WAVE, False, self.waveobj_list[index:index + slice_range], '')
             event.accept()
         elif mimedata.hasFormat('audio/waves'):
-            start, end = map(int, str(mimedata.data('audio/waves')).split(':'))
+            start, end = list(map(int, str(mimedata.data('audio/waves')).split(':')))
             if start == index:
                 event.ignore()
                 return
@@ -1399,7 +1399,7 @@ class WaveTableView(QtGui.QGraphicsView):
                 wave_obj.setValues(data_list[i])
             for r in self.waveobj_list:
                 r.preview_rect.setHighlight(False)
-            selection = tuple(xrange(index, index + wave_len))
+            selection = tuple(range(index, index + wave_len))
             for i, r in enumerate(self.waveobj_list):
                 r.preview_rect.setSelected(True if i in selection else False)
             self.selection = selection
@@ -1506,13 +1506,13 @@ class WaveScene(QtGui.QGraphicsScene):
         self.small_lines = []
         main_h_lines = []
         h_length = pow21 - 16384
-        for group in xrange(0, pow21, 65536):
+        for group in range(0, pow21, 65536):
             hor = self.addLine(0, group, h_length, group)
             hor.setPen(pen)
             main_h_lines.append(hor)
             ver = self.addLine(group, 0, group, pow21)
             ver.setPen(pen)
-            for line in xrange(1, 4):
+            for line in range(1, 4):
                 pos = group + line * 16384
                 hor = self.addLine(0, pos, h_length, pos)
                 hor.setPen(smallpen)
@@ -1623,7 +1623,7 @@ class WaveScene(QtGui.QGraphicsScene):
 #            return False
         end_limit = br.x() + br.width()
         start_limit = start.x
-        for p in xrange(128):
+        for p in range(128):
             delta_x = new.pointAtPercent(p*.0078125).x()
             if not start_limit <= delta_x <= end_limit:
                 valid = False
@@ -1792,7 +1792,7 @@ class WaveView(QtGui.QWidget):
                         range_t = start - 1, end, -1
                     else:
                         range_t = start + 1, end
-                    for sample in xrange(*range_t):
+                    for sample in range(*range_t):
                         base = QtGui.QPainterPath()
                         base.addRect(sample * 16384, 0, 1, 2097152)
                         inters = base.intersected(orig)
@@ -1879,10 +1879,10 @@ class WaveView(QtGui.QWidget):
             diff = value - prev_value
             ratio = float(diff)/delta_sample
             if sample > prev_sample:
-                for i, s in enumerate(xrange(prev_sample + 1, sample)):
+                for i, s in enumerate(range(prev_sample + 1, sample)):
                     self.valueChanged.emit(s, int(prev_value + (i + 1) * ratio))
             else:
-                for i, s in enumerate(xrange(prev_sample - 1, sample, -1)):
+                for i, s in enumerate(range(prev_sample - 1, sample, -1)):
                     self.valueChanged.emit(s, int(prev_value + (i + 1) * ratio))
             self.valueChanged.emit(sample, value)
             self.mouse_prev = sample, value
@@ -1903,10 +1903,10 @@ class WaveView(QtGui.QWidget):
             diff = value - prev_value
             ratio = float(diff)/delta_sample
             if sample > prev_sample:
-                for i, s in enumerate(xrange(prev_sample + 1, sample)):
+                for i, s in enumerate(range(prev_sample + 1, sample)):
                     self.valueChanged.emit(s, int(prev_value + (i + 1) * ratio))
             else:
-                for i, s in enumerate(xrange(prev_sample - 1, sample, -1)):
+                for i, s in enumerate(range(prev_sample - 1, sample, -1)):
                     self.valueChanged.emit(s, int(prev_value + (i + 1) * ratio))
             self.valueChanged.emit(sample, value)
             self.drawAction.emit(DRAW_LINE, False)
@@ -1955,7 +1955,7 @@ class AudioBuffer(QtCore.QBuffer):
         QtCore.QBuffer.__init__(self, *args, **kwargs)
         self.waveobj_list = waveobj_list
 
-        self.single_data_list = [QtCore.QByteArray() for b in xrange(64)]
+        self.single_data_list = [QtCore.QByteArray() for b in range(64)]
         self.multi_data = QtCore.QByteArray()
         self.multiplier = 6
         self.ratio = 1. / 44100 * 128 * self.multiplier * 1000000
@@ -2115,7 +2115,7 @@ class WaveTableEditor(QtGui.QMainWindow):
         if uid is None:
             self.wavetable_uid = str(uuid4())
             if wavetable_data is None:
-                values = [None for w in xrange(64)]
+                values = [None for w in range(64)]
                 self.wavetable_name = self.name_edit.text()
             else:
                 values, slot, name = wavetable_data
@@ -2127,7 +2127,7 @@ class WaveTableEditor(QtGui.QMainWindow):
             self.name_edit.setText(name)
             self.slot_spin.setValue(slot)
             self.save_index = 0
-        for w in xrange(64):
+        for w in range(64):
             wave_obj = WaveObject(w, values[w])
             wave_obj.selected.connect(self.setWave)
             wave_obj.changed.connect(lambda o: self.setWave(o) if o.index == self.currentWave else None)
@@ -2264,7 +2264,7 @@ class WaveTableEditor(QtGui.QMainWindow):
                 action = QtGui.QAction(window.name_edit.text(), self)
                 self.menuWindows.addAction(action)
                 self.wavetable_window_actions.append(action)
-        for window, action in window_actions.items():
+        for window, action in list(window_actions.items()):
             if window not in window_list:
                 self.menuWindows.removeAction(action)
 
@@ -2454,7 +2454,7 @@ class WaveTableEditor(QtGui.QMainWindow):
     def dump(self):
         def send(index):
             self.dump_dialog.setIndex(index)
-            sysex_data = sysex_list.next()
+            sysex_data = next(sysex_list)
             self.wavetable_send.emit(sysex_data)
             if index == 63:
                 self.dump_dialog.hide()
@@ -2616,7 +2616,7 @@ class WaveTableEditor(QtGui.QMainWindow):
                 if len(sysex_list) != 26240:
                     raise
                 wt_list = []
-                for w in xrange(64):
+                for w in range(64):
                     data = sysex_list[w * 410 + 1:w * 410 + 408]
                     if data[:3] != [IDW, IDE] and data[3] != WTBD and data[6] != 0:
                         raise
@@ -2625,7 +2625,7 @@ class WaveTableEditor(QtGui.QMainWindow):
                 invalid_msgbox(self)
                 return
         wt_slot = data[4]
-        wt_name = ''.join([str(unichr(l)) for l in data[391:405]])
+        wt_name = ''.join([str(chr(l)) for l in data[391:405]])
         self.slot_spin.setValue(wt_slot)
         self.name_edit.setText(wt_name)
 
@@ -2634,8 +2634,8 @@ class WaveTableEditor(QtGui.QMainWindow):
         for w, wave_obj in enumerate(self.waveobj_list):
             values_iter = iter(wt_list[w])
             values = []
-            for s in xrange(128):
-                value = (values_iter.next() << 14) + (values_iter.next() << 7) + values_iter.next()
+            for s in range(128):
+                value = (next(values_iter) << 14) + (next(values_iter) << 7) + next(values_iter)
                 if value >= 1048576:
                     value -= 2097152
                 values.append(value)

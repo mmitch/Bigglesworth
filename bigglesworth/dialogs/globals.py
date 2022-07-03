@@ -180,7 +180,7 @@ class Globals(QtGui.QDialog):
 #            for i, v in enumerate(self.data):
 #                if v != data[i]:
 #                    print 'value {} changed from {} to {}'.format(i, v, data[i])
-        for w, p in self.param_dict.items():
+        for w, p in list(self.param_dict.items()):
             if isinstance(w, QtGui.QSpinBox):
                 w.setValue(data[p.index] + p.delta)
             elif isinstance(w, PopupSpin):

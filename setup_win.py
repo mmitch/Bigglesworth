@@ -39,7 +39,7 @@ files = [
          'bigglesworth/dialogs/wavetable_list.ui', 
 
          ]
-buildOptions = dict(packages = [], excludes = [], includes = ['atexit'], include_files = zip(files, files))
+buildOptions = dict(packages = [], excludes = [], includes = ['atexit'], include_files = list(zip(files, files)))
 macbuildOptions = {'iconfile': 'icons/bigglesworth_icon.icns', 'bundle_name': 'Bigglesworth'}
 dmgOptions = {'applications_shortcut': True}
 

@@ -5,8 +5,8 @@ from PyQt4 import QtCore
 import rtmidi
 
 #from const import *
-from midiutils import *
-INPUT, OUTPUT = xrange(2)
+from .midiutils import *
+INPUT, OUTPUT = range(2)
 
 class RtMidiSequencer(QtCore.QObject):
     ''' A fake sequencer object that emulates ALSA sequencer'''
@@ -36,8 +36,8 @@ class RtMidiSequencer(QtCore.QObject):
         self.client_dict = {}
 
     def update_graph(self):
-        previous_out_clients = self.out_graph_dict.keys()
-        previous_in_clients = self.in_graph_dict.keys()
+        previous_out_clients = list(self.out_graph_dict.keys())
+        previous_in_clients = list(self.in_graph_dict.keys())
         for previous_list in previous_out_clients, previous_in_clients:
             for port_name in previous_list:
                 if port_name.startswith('Bigglesworth'):
@@ -53,7 +53,7 @@ class RtMidiSequencer(QtCore.QObject):
         if previous_out_clients:
             for port_name in previous_out_clients:
                 self.out_graph_dict.pop(port_name)
-                client_id = self.client_dict.keys()[self.client_dict.values().index(port_name)]
+                client_id = list(self.client_dict.keys())[list(self.client_dict.values()).index(port_name)]
                 self.client_dict.pop(client_id)
                 self.port_destroyed.emit({'addr.client': client_id, 'addr.port': 0})
                 self.client_destroyed.emit({'addr.client': client_id})
@@ -77,7 +77,7 @@ class RtMidiSequencer(QtCore.QObject):
         if previous_in_clients:
             for port_name in previous_in_clients:
                 self.in_graph_dict.pop(port_name)
-                client_id = self.client_dict.keys()[self.client_dict.values().index(port_name)]
+                client_id = list(self.client_dict.keys())[list(self.client_dict.values()).index(port_name)]
                 self.client_dict.pop(client_id)
                 self.port_destroyed.emit({'addr.client': client_id, 'addr.port': 0})
                 self.client_destroyed.emit({'addr.client': client_id})
@@ -107,7 +107,7 @@ class RtMidiSequencer(QtCore.QObject):
         for out_id, port_name in enumerate(self.listener_out.get_ports(), in_id + 1):
             self.in_graph_dict[port_name] = out_id
             self.client_dict[out_id] = port_name
-        for client_id, name in self.client_dict.items():
+        for client_id, name in list(self.client_dict.items()):
             res_list.append((name, client_id, [(name, 0, ([], []))]))
         return res_list
 
@@ -126,7 +126,7 @@ class RtMidiSequencer(QtCore.QObject):
                 }
 
     def get_port_info(self, port_id, client_id):
-        if client_id in self.in_graph_dict.values():
+        if client_id in list(self.in_graph_dict.values()):
             caps = self.default_in_caps
         else:
             caps = self.default_out_caps
@@ -172,7 +172,7 @@ class RtMidiSequencer(QtCore.QObject):
             target_name = self.client_dict[dest]
         else:
             target_name = self.client_dict[source]
-        for port, dest in self.connections.items():
+        for port, dest in list(self.connections.items()):
             if target_name == dest:
                 port.close_port()
                 self.connections[port] = None
@@ -193,7 +193,7 @@ class RtMidiSequencer(QtCore.QObject):
             target_name = self.client_dict[dest]
         else:
             target_name = self.client_dict[source]
-        for port, dest in self.connections.items():
+        for port, dest in list(self.connections.items()):
             if target_name == dest:
 #                port.close_port()
 #                self.connections[port] = None
@@ -231,7 +231,8 @@ class MidiDevice(QtCore.QObject):
         self.input = self.graph.port_id_dict[0][0]
         self.output = self.graph.port_id_dict[1][0]
 
-    def create_midi_event(self, (data, time), *args):
+    def create_midi_event(self, xxx_todo_changeme, *args):
+        (data, time) = xxx_todo_changeme
         newev = MidiEvent.from_binary(data)
         self.midi_event.emit(newev)
 
@@ -243,10 +244,10 @@ class MidiDevice(QtCore.QObject):
                 sleep(.1)
                 self.seq.update_graph()
             except Exception as e:
-                print e
-                print 'something is wrong'
+                print(e)
+                print('something is wrong')
 #        print 'stopped'
-        print 'exit'
+        print('exit')
         del self.seq
         self.stopped.emit()
 
@@ -266,5 +267,5 @@ class MidiDevice(QtCore.QObject):
                 self.midi_event.emit(sysex)
                 self.buffer = []
         except Exception as Err:
-            print len(self.buffer)
-            print Err
+            print(len(self.buffer))
+            print(Err)

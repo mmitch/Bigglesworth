@@ -52,9 +52,9 @@ class WaveImportSceneView(QtGui.QGraphicsView):
         right_data = audioop.tomono(data, sampwidth, 0, 1)
         wavepath = QtGui.QPainterPath()
         try:
-            for frame_set in xrange(256):
+            for frame_set in range(256):
                 left_min = left_max = right_min = right_max = 0
-                for frame in xrange(ratio):
+                for frame in range(ratio):
                     try:
                         pos = frame + frame_set * ratio
                         left_value = audioop.getsample(left_data, sampwidth, pos)
@@ -88,9 +88,9 @@ class WaveImportSceneView(QtGui.QGraphicsView):
         data = stream.readframes(float('inf'))
         wavepath = QtGui.QPainterPath()
         try:
-            for frame_set in xrange(256):
+            for frame_set in range(256):
                 frame_min = frame_max = 0
-                for frame in xrange(ratio):
+                for frame in range(ratio):
                     try:
                         value = audioop.getsample(data, sampwidth, frame + frame_set * ratio)
                         frame_min = min(frame_min, value)

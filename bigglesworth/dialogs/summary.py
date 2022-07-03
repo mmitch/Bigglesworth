@@ -136,11 +136,11 @@ class SummaryWidget(QtGui.QSplitter):
             return widget, layout.minimumSize().width()
 
         param_width = 0
-        for family, children in families.items():
+        for family, children in list(families.items()):
             fam_item = QtGui.QStandardItem(family)
             self.model.appendRow(fam_item)
             if isinstance(children, dict):
-                for child, params in children.items():
+                for child, params in list(children.items()):
                     if child is None:
                         child_widget, width = create_view(family, params)
                         fam_item.setData(child_widget, WidgetRole)
@@ -191,11 +191,11 @@ class SummaryWidget(QtGui.QSplitter):
                         value = value - param.range[0]
                     edit.setText(param.values[value])
             except Exception as e:
-                print 'Exception: {}'.format(e)
+                print('Exception: {}'.format(e))
                 try:
-                    print 'Something wrong with param {} "{}": {}'.format(i, param.name, param.values[data[i]])
+                    print('Something wrong with param {} "{}": {}'.format(i, param.name, param.values[data[i]]))
                 except:
-                    print 'Out of range for param "{}" (range: {}): {} (value: {})'.format(param.name, param.range, data[i], value)
+                    print('Out of range for param "{}" (range: {}): {} (value: {})'.format(param.name, param.range, data[i], value))
 
 
 
@@ -309,12 +309,12 @@ class SummaryDialog(QtGui.QDialog):
         else:
             self.bank_combo.setCurrentIndex(bank)
             self.prog_spin.setValue(prog+1)
-        self.name_lbl.setText(''.join([str(unichr(l)) for l in data[363:379]]))
+        self.name_lbl.setText(''.join([str(chr(l)) for l in data[363:379]]))
         if source:
             try:
                 self.source_lbl.setEllipsisText(source)
             except Exception as e:
-                print e
+                print(e)
         else:
             self.source_lbl.setText('Local library' if sound.source == SRC_LIBRARY else 'Blofeld dump')
         self.show()

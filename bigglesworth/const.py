@@ -29,18 +29,18 @@ QWIDGETSIZE_MAX = ((1 << 24) - 1)
 INPUT, OUTPUT = 0, 1
 LEGATO = 0
 RANDOM = 0
-RANGE, VALUE, NAME, SHORTNAME, FAMILY, VARNAME = range(6)
-SRC_LIBRARY, SRC_BLOFELD, SRC_EXTERNAL = range(3)
+RANGE, VALUE, NAME, SHORTNAME, FAMILY, VARNAME = list(range(6))
+SRC_LIBRARY, SRC_BLOFELD, SRC_EXTERNAL = list(range(3))
 EMPTY, STORED, DUMPED, MOVED, EDITED = [0, 1, 3, 4, 8]
 
-PGMRECEIVE, MIDIRECEIVE, PGMSEND, MIDISEND = range(4)
-MOVEUP, MOVEDOWN, MOVELEFT, MOVERIGHT, MOVE = range(5)
+PGMRECEIVE, MIDIRECEIVE, PGMSEND, MIDISEND = list(range(4))
+MOVEUP, MOVEDOWN, MOVELEFT, MOVERIGHT, MOVE = list(range(5))
 
 DUMP_ALL = -1
 SMEB = 0x7f, 0x00
 MIEB = True
 
-MoveCursor, UpCursor, DownCursor, LeftCursor, RightCursor = range(5)
+MoveCursor, UpCursor, DownCursor, LeftCursor, RightCursor = list(range(5))
 cursor_list = []
 status_dict = {
                EMPTY: 'Empty', 
@@ -63,7 +63,7 @@ GLBR = 0x4
 GLBD = 0x14
 WTBD = 0x12
 
-CURSOR_NORMAL, CURSOR_INSERT = range(2)
+CURSOR_NORMAL, CURSOR_INSERT = list(range(2))
 
 
 class InvalidException(Exception):
@@ -115,7 +115,7 @@ class AdvParam(object):
 
     def is_valid(self, value):
         invalid = []
-        for key, (shift, max_value) in self.indexes_range.items():
+        for key, (shift, max_value) in list(self.indexes_range.items()):
             bl = max_value.bit_length()
             trim_value = (value >> shift) & (2**bl-1)
             if trim_value > max_value:
@@ -153,8 +153,8 @@ class AdvParam(object):
         try:
             return self.get(data)
         except Exception as e:
-            print e
-            print 'Parameters malformed (format: {}): {} ({:08b})'.format(self.fmt, data, data)
+            print(e)
+            print('Parameters malformed (format: {}): {} ({:08b})'.format(self.fmt, data, data))
 
 arp_step_types = [
                   'normal', 
@@ -290,7 +290,7 @@ ctrl2sysex = {
               113: 235, 114: 237, 115: 238, 116: 239, 117: 240, 118: 241,   #env4 env
               }
 
-INDEX, BANK, PROG, NAME, CATEGORY, STATUS, SOUND = range(7)
+INDEX, BANK, PROG, NAME, CATEGORY, STATUS, SOUND = list(range(7))
 sound_headers = ['Index', 'Bank', 'Id', 'Name', 'Category', 'Status']
 
 categories = [

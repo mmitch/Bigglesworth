@@ -3,7 +3,7 @@
 # Copyright (c) 2007-2008 ActiveState Corp.
 # License: MIT (http://www.opensource.org/licenses/mit-license.php)
 
-from __future__ import generators
+
 
 r"""A fast and complete Python implementation of Markdown.
 
@@ -110,7 +110,7 @@ import optparse
 from random import random, randint
 import codecs
 try:
-    from urllib import quote_plus
+    from urllib.parse import quote_plus
 except ImportError:
     from urllib.parse import quote_plus
 
@@ -129,10 +129,10 @@ if sys.version_info[0] <= 2:
         bytes
     except NameError:
         bytes = str
-    base_string_type = basestring
+    base_string_type = str
 elif sys.version_info[0] >= 3:
     py3 = True
-    unicode = str
+    str = str
     base_string_type = str
 
 # ---- globals
@@ -298,9 +298,9 @@ class Markdown(object):
         # articles):
         self.reset()
 
-        if not isinstance(text, unicode):
+        if not isinstance(text, str):
             # TODO: perhaps shouldn't presume UTF-8 for string input?
-            text = unicode(text, 'utf-8')
+            text = str(text, 'utf-8')
 
         if self.use_file_vars:
             # Look for emacs-style file variable hints.
@@ -2214,7 +2214,7 @@ class MarkdownWithExtras(Markdown):
 
 # ---- internal support functions
 
-class UnicodeWithAttrs(unicode):
+class UnicodeWithAttrs(str):
     """A subclass of unicode used for the return value of conversion to
     possibly attach some attributes. E.g. the "toc_html" attribute when
     the "toc" extra is used.
@@ -2327,8 +2327,8 @@ def _dedentlines(lines, tabsize=8, skip_first_line=False):
     """
     DEBUG = False
     if DEBUG:
-        print("dedent: dedent(..., tabsize=%d, skip_first_line=%r)"\
-              % (tabsize, skip_first_line))
+        print(("dedent: dedent(..., tabsize=%d, skip_first_line=%r)"\
+              % (tabsize, skip_first_line)))
     margin = None
     for i, line in enumerate(lines):
         if i == 0 and skip_first_line: continue
@@ -2344,12 +2344,12 @@ def _dedentlines(lines, tabsize=8, skip_first_line=False):
                 break
         else:
             continue  # skip all-whitespace lines
-        if DEBUG: print("dedent: indent=%d: %r" % (indent, line))
+        if DEBUG: print(("dedent: indent=%d: %r" % (indent, line)))
         if margin is None:
             margin = indent
         else:
             margin = min(margin, indent)
-    if DEBUG: print("dedent: margin=%r" % margin)
+    if DEBUG: print(("dedent: margin=%r" % margin))
 
     if margin is not None and margin > 0:
         for i, line in enumerate(lines):
@@ -2361,7 +2361,7 @@ def _dedentlines(lines, tabsize=8, skip_first_line=False):
                 elif ch == '\t':
                     removed += tabsize - (removed % tabsize)
                 elif ch in '\r\n':
-                    if DEBUG: print("dedent: %r: EOL -> strip up to EOL" % line)
+                    if DEBUG: print(("dedent: %r: EOL -> strip up to EOL" % line))
                     lines[i] = lines[i][j:]
                     break
                 else:
@@ -2369,8 +2369,8 @@ def _dedentlines(lines, tabsize=8, skip_first_line=False):
                                      "line %r while removing %d-space margin"
                                      % (ch, line, margin))
                 if DEBUG:
-                    print("dedent: %r: %r -> removed %d/%d"\
-                          % (line, ch, removed, margin))
+                    print(("dedent: %r: %r -> removed %d/%d"\
+                          % (line, ch, removed, margin)))
                 if removed == margin:
                     lines[i] = lines[i][j+1:]
                     break
@@ -2650,7 +2650,7 @@ def main(argv=None):
             else:
                 norm_html = html
                 norm_perl_html = perl_html
-            print("==== match? %r ====" % (norm_perl_html == norm_html))
+            print(("==== match? %r ====" % (norm_perl_html == norm_html)))
 
 
 if __name__ == "__main__":

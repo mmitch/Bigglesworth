@@ -3,7 +3,7 @@
 
 import struct
 from threading import Lock
-from const import *
+from .const import *
 try:
     from pyalsa import alsaseq
     ALSA = True
@@ -118,7 +118,7 @@ Controllers = {
                }
 
 for c in range(128):
-    if not c in Controllers.keys():
+    if not c in list(Controllers.keys()):
         Controllers[c] = 'Undefined'
 
 if ALSA:
@@ -128,7 +128,7 @@ if ALSA:
     _PortCapsStrings = {}
     _ClientTypeStrings = {}
 
-    for desc, value in alsaseq.__dict__.items():
+    for desc, value in list(alsaseq.__dict__.items()):
         if desc in ['SEQ_USER_CLIENT', 'SEQ_KERNEL_CLIENT']:
             _ClientTypeStrings[int(value)] = desc[4:].replace('_', ' ').capitalize()
         elif desc.startswith('SEQ_PORT_CAP_'):
@@ -228,7 +228,7 @@ _event_type_values = {}
 _event_type_alsa = {}
 _event_type_toalsa = {}
 EventTypes = []
-for v, (alsa_str, name) in _event_types_raw.items():
+for v, (alsa_str, name) in list(_event_types_raw.items()):
     _type_obj = _EventType(v, name)
     globals()[name] = _type_obj
     _event_type_names[name] = _type_obj
@@ -250,7 +250,7 @@ _bits_to_event = {
                   0xf: SYSEX, 
                   }
 
-_event_to_bits = {v:k<<4 for k, v in _bits_to_event.items()}
+_event_to_bits = {v:k<<4 for k, v in list(_bits_to_event.items())}
 
 def _value_to_bytes(value):
     return (value & 63),  (value >> 7)
@@ -260,7 +260,7 @@ def _bytes_to_value(unit, multi):
 
 def _get_jack_event_type(value):
     found = False
-    for bit, event_type in _bits_to_event.items():
+    for bit, event_type in list(_bits_to_event.items()):
         if value >> 4 == bit:
             found = True
             break
@@ -277,7 +277,7 @@ NoteNames = {id:'{}{}'.format(_note_names[id%12], id//12) for id in range(128)}
 _sharps = {'c': 'd', 'd': 'e', 'f': 'g', 'g': 'a', 'a': 'b'}
 _en = {'c': ('b#', -1), 'e': ('fb', 0), 'f': ('e#', 0), 'b': ('cb', 1)}
 NoteIds = {'c0': 0}
-for i, n in NoteNames.items():                        
+for i, n in list(NoteNames.items()):                        
     NoteIds[n] = i
     if n[1] == '#':
         NoteIds['{}b{}'.format(_sharps[n[0]],n[2:])] = i
@@ -348,7 +348,7 @@ class MidiEvent(object):
                 self.data1 = self.data2 = 0
                 self._sysex = None
         else:
-            if not event_type in _event_type_values.values():
+            if not event_type in list(_event_type_values.values()):
                 raise ValueError('There\'s no such event type as {}'.format(event_type))
             self._type = event_type
             self.source = source
@@ -415,7 +415,7 @@ class MidiEvent(object):
 
     @type.setter
     def type(self, event_type):
-        if event_type not in _event_type_values.values():
+        if event_type not in list(_event_type_values.values()):
             raise ValueError('{} is not a valid MIDI Event Type'.format(event_type))
         self._event = None
         self._type = event_type
@@ -746,18 +746,18 @@ class Connection(QtCore.QObject):
 #            return 'Connection {}:{} ({}:{}) > {}:{} ({}:{})'.format(self.src.client.name, self.src.name, self.src.client.id, self.src.id,
 #                                                                     self.dest.client.name, self.dest.name, self.dest.client.id, self.dest.id)
         except Exception as err:
-            print err
+            print(err)
             if (self.graph.backend == ALSA and isinstance(err, alsaseq.SequencerError)) or isinstance(err, rtmidi.RtMidiError):
                 self.lostEvent()
                 self.graph.conn_deleted(self)
                 return '(destroyed) Conn ({}:{}) > ({}:{})'.format(self.src.client.id, self.src.id, self.dest.client.id, self.dest.id)
-            print 'Connection error: {}'.format(err)
+            print('Connection error: {}'.format(err))
 
     def delete(self):
         try:
             self.seq.disconnect_ports(self.src.addr, self.dest.addr)
         except alsaseq.SequencerError:
-            print 'Disconnect not successful'
+            print('Disconnect not successful')
 
 class Port(QtCore.QObject):
     connection = QtCore.pyqtSignal(object, object)
@@ -836,12 +836,12 @@ class Port(QtCore.QObject):
                 self.seq.disconnect_ports(self.addr, dest.addr)
                 return
             except alsaseq.SequencerError:
-                print 'Disconnection {} > {} not permitted'.format(self.exp, dest.exp)
+                print('Disconnection {} > {} not permitted'.format(self.exp, dest.exp))
                 return
         try:
             self.seq.disconnect_ports(dest.addr, self.addr)
         except alsaseq.SequencerError:
-            print 'Disconnection {} > {} not permitted'.format(dest.exp, self.exp)
+            print('Disconnection {} > {} not permitted'.format(dest.exp, self.exp))
             return
 
     def disconnect_all(self, dir=None, skip_hidden=True):
@@ -852,7 +852,7 @@ class Port(QtCore.QObject):
                 try:
                     self.seq.disconnect_ports(conn.src.addr, conn.dest.addr)
                 except alsaseq.SequencerError:
-                    print 'Disconnection {} > {} not permitted'.format(conn.src.exp, conn.dest.exp)
+                    print('Disconnection {} > {} not permitted'.format(conn.src.exp, conn.dest.exp))
         else:
             if not self.is_duplex and ((dir == OUTPUT and not self.is_output) or (dir == INPUT and not self.is_input)):
                 return
@@ -863,7 +863,7 @@ class Port(QtCore.QObject):
                     try:
                         self.seq.disconnect_ports(conn.src.addr, conn.dest.addr)
                     except alsaseq.SequencerError:
-                        print 'Disconnection {} > {} not permitted'.format(conn.src.exp, conn.dest.exp)
+                        print('Disconnection {} > {} not permitted'.format(conn.src.exp, conn.dest.exp))
             else:
                 for conn in self.connections.input:
                     if skip_hidden and conn.hidden:
@@ -871,7 +871,7 @@ class Port(QtCore.QObject):
                     try:
                         self.seq.disconnect_ports(conn.src.addr, conn.dest.addr)
                     except alsaseq.SequencerError:
-                        print 'Disconnection {} > {} not permitted'.format(conn.src.exp, conn.dest.exp)
+                        print('Disconnection {} > {} not permitted'.format(conn.src.exp, conn.dest.exp))
 
     @property
     def type_str(self):
@@ -942,7 +942,7 @@ class Client(QtCore.QObject):
         del port
 
     def get_connections(self):
-        return list(set([port.connections for port in self.port_dict.values()]))
+        return list(set([port.connections for port in list(self.port_dict.values())]))
 
     def __str__(self):
         return self.name
@@ -1014,7 +1014,7 @@ class Graph(QtCore.QObject):
         except KeyError:
             return None
         except Exception as err:
-            print 'Unknown exception ({}): {}'.format(type(err), err)
+            print('Unknown exception ({}): {}'.format(type(err), err))
             return None
 
 
@@ -1040,7 +1040,7 @@ class Graph(QtCore.QObject):
     def client_destroyed(self, data):
         client_id = data['addr.client']
         client = self.client_id_dict[client_id]
-        for port in client.port_dict.values():
+        for port in list(client.port_dict.values()):
             #since ALSA (should have) disconnected all client's port, get_port_connections will take care of their removal
             self.get_port_connections(port)
             client.remove_port(port)
@@ -1087,7 +1087,7 @@ class Graph(QtCore.QObject):
         for client in [self.client_id_dict[i] for i in sorted(self.client_id_dict.keys())]:
             c_str = '{}\n'.format(client)
             output = ''
-            for port in client.port_dict.values():
+            for port in list(client.port_dict.values()):
                 if port.hidden and not full_port:
                     continue
                 output += '\t{} (type: {}, caps: {})\n'.format(port, port.type, port.caps)
@@ -1097,7 +1097,7 @@ class Graph(QtCore.QObject):
                     conn_port = conn.dest if conn.dest!= port else conn.src
                     output += '\t\t{} (type: {}, caps: {})\n'.format(conn_port, conn_port.type, conn_port.caps)
             if len(output):
-                print c_str+output
+                print(c_str+output)
 
     def graph_simple(self, input=None, output=None, hidden=False):
         c_output = []
@@ -1105,7 +1105,7 @@ class Graph(QtCore.QObject):
         for id, client in enumerate([self.client_id_dict[i] for i in sorted(self.client_id_dict.keys())]):
             c_output.append(['  {} ({})'.format(client.name, client.id)])
             c_input.append(['  {} ({})'.format(client.name, client.id)])
-            for port in client.port_dict.values():
+            for port in list(client.port_dict.values()):
                 if port.hidden and not hidden:
                     continue
                 if port.is_output:
@@ -1135,12 +1135,12 @@ class Graph(QtCore.QObject):
                 if len(client) > 1:
                     s += '\n'.join(client)
                     s += '\n'
-        print s
+        print(s)
 
     @property
     def client_name_dict(self):
         name_dict = {}
-        for client_id, client in self.client_id_dict.items():
+        for client_id, client in list(self.client_id_dict.items()):
             name_l = name_dict.get(client.name, [])
             name_l.append(client_id)
             name_dict[client.name] = name_l

@@ -8,12 +8,12 @@ from itertools import cycle
 from random import randrange
 from PyQt4 import QtCore, QtGui
 
-from midiutils import *
+from .midiutils import *
 
-from const import *
-from classes import *
-from utils import *
-from editor_widgets import *
+from .const import *
+from .classes import *
+from .utils import *
+from .editor_widgets import *
 
 
 class ParamObject(object):
@@ -146,7 +146,7 @@ class BlofeldCombo(Combo):
         self.main = parent
         self.indexChanged.connect(lambda id: setattr(self.main, self.attr, id if sub_par is None else (id, sub_par)))
         if id and id in (8, 24):
-            for item_id in xrange(73, 86):
+            for item_id in range(73, 86):
                 item = self.model().item(item_id)
                 setBold(item, False)
                 setItalic(item, True)
@@ -373,7 +373,7 @@ class ProgLabelTextWidget(BaseTextWidget):
         if char == 127:
             readable = QtCore.QString.fromUtf8('°')
         else:
-            readable = QtCore.QString(unichr(char))
+            readable = QtCore.QString(chr(char))
         self.text_list[pos] = readable
         self.text = self.text_list.join('')
         self.update()
@@ -405,7 +405,7 @@ class ProgLabelTextWidget(BaseTextWidget):
             if letter == '°': return
             char = ord(letter)
             if char < 126:
-                new_char = QtCore.QString.fromUtf8(unichr(char+1))
+                new_char = QtCore.QString.fromUtf8(chr(char+1))
             else:
                 new_char = QtCore.QString.fromUtf8('°')
             self.editing_text = self.editing_text[:self.cursor_pos] + new_char + self.editing_text[self.cursor_pos+1:]
@@ -417,7 +417,7 @@ class ProgLabelTextWidget(BaseTextWidget):
                 char = 127
             else:
                 char = ord(letter)
-            new_char = unichr(char-1)
+            new_char = chr(char-1)
             self.editing_text = self.editing_text[:self.cursor_pos] + new_char + self.editing_text[self.cursor_pos+1:]
             self.set_cursor_pos(self.cursor_pos)
         elif event.key() == QtCore.Qt.Key_Home:
@@ -444,7 +444,7 @@ class ProgLabelTextWidget(BaseTextWidget):
                     self.editing_text = self.editing_text[:self.cursor_pos] + event.text() + self.editing_text[self.cursor_pos+1:]
                     self.set_cursor_pos(self.cursor_pos+1)
             except Exception as e:
-                print e
+                print(e)
         self.update()
 
     def focusOutEvent(self, event):
@@ -673,7 +673,7 @@ class StepTypeComboLabel(DisplayComboLabelClass):
                   '▼', 
                   '▲', 
                   ]
-    value_list = map(QtCore.QString.fromUtf8, value_list)
+    value_list = list(map(QtCore.QString.fromUtf8, value_list))
     firstlast = QtGui.QPainterPath()
     firstlast.moveTo(4, 0)
     firstlast.lineTo(8, 4)
@@ -695,17 +695,17 @@ class StepTypeComboLabel(DisplayComboLabelClass):
 
 class AccentComboLabel(DisplayComboLabelClass):
     value_list = ['sil.', '/4', '/3', '/2', '*1', '*2', '*3', '*4', ]
-    value_list = map(QtCore.QString.fromUtf8, value_list)
+    value_list = list(map(QtCore.QString.fromUtf8, value_list))
 
 
 class TimingComboLabel(DisplayComboLabelClass):
     value_list = ['rnd', '-3', '-2', '-1', '+0', '+1', '+2', '+3', ]
-    value_list = map(QtCore.QString.fromUtf8, value_list)
+    value_list = list(map(QtCore.QString.fromUtf8, value_list))
 
 
 class LengthComboLabel(DisplayComboLabelClass):
     value_list = ['leg.', '-3', '-2', '-1', '+0', '+1', '+2', '+3', ]
-    value_list = map(QtCore.QString.fromUtf8, value_list)
+    value_list = list(map(QtCore.QString.fromUtf8, value_list))
 
 
 class DisplayButton(QtGui.QGraphicsWidget):
@@ -1291,7 +1291,7 @@ class ArpStepWidget(QtGui.QGraphicsWidget):
         self.next = item
 
     def update_legato(self, _=None):
-        if self.length != LEGATO or self.next is None: return
+        if self.length != LEGATO or self.__next__ is None: return
         if self.next.timing == 0:
             next_timing = 4
         else:
@@ -2255,7 +2255,7 @@ class Editor(QtGui.QMainWindow):
     filter_matrix_toggle_state = QtCore.pyqtSignal(bool)
     efx_arp_toggle_state = QtCore.pyqtSignal(bool)
 
-    object_dict = {attr: ParamObject(param_tuple) for attr, param_tuple in Params.param_names.items()}
+    object_dict = {attr: ParamObject(param_tuple) for attr, param_tuple in list(Params.param_names.items())}
     with open(local_path('blofeld_efx'), 'rb') as _fx:
         efx_params = pickle.load(_fx)
     with open(local_path('blofeld_efx_ranges'), 'rb') as _fx:
@@ -2393,14 +2393,14 @@ class Editor(QtGui.QMainWindow):
 #        filter_matrix_lbl = Label(self, 'Mod Matrix Editor', QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
 #        btn_layout.addWidget(filter_matrix_lbl)
         filter_matrix_cycle = cycle((0, 1))
-        filter_matrix_cycle.next()
+        next(filter_matrix_cycle)
         filter_matrix_labels = 'Mod Matrix Editor', 'Filters'
 
         if sys.platform == 'darwin':
             self.filter_matrix_widgets = filter_matrix_tuple = filter_widget, matrix_widget
             matrix_widget.hide()
             def filter_matrix_set():
-                id = filter_matrix_cycle.next()
+                id = next(filter_matrix_cycle)
                 for i, w in enumerate(filter_matrix_tuple):
                     if i == id:
                         w.show()
@@ -2424,7 +2424,7 @@ class Editor(QtGui.QMainWindow):
             filter_matrix_tuple = (filter_widget, filter_opacity_anim), (matrix_widget, matrix_opacity_anim)
 
             def filter_matrix_set():
-                id = filter_matrix_cycle.next()
+                id = next(filter_matrix_cycle)
                 for i, (w, a) in enumerate(filter_matrix_tuple):
                     if i == id:
                         a.setStartValue(0)
@@ -2451,7 +2451,7 @@ class Editor(QtGui.QMainWindow):
         adv_arp_layout.setContentsMargins(0, 0, 0, 0)
         adv_arp_widget.setLayout(adv_arp_layout)
         adv_arp_cycle = cycle((0, 1))
-        adv_arp_cycle.next()
+        next(adv_arp_cycle)
         adv_arp_labels = 'Arpeggiator Pattern Editor', 'Effects and Arpeggiator'
 
         adv_widget = QtGui.QWidget()
@@ -2476,7 +2476,7 @@ class Editor(QtGui.QMainWindow):
             self.adv_arp_widgets = adv_arp_tuple = adv_widget, arp_widget
             arp_widget.hide()
             def adv_arp_set():
-                id = adv_arp_cycle.next()
+                id = next(adv_arp_cycle)
                 for i, w in enumerate(adv_arp_tuple):
                     if i == id:
                         w.show()
@@ -2500,7 +2500,7 @@ class Editor(QtGui.QMainWindow):
             adv_arp_tuple = (adv_widget, adv_opacity_anim), (arp_widget, arp_opacity_anim)
 
             def adv_arp_set():
-                id = adv_arp_cycle.next()
+                id = next(adv_arp_cycle)
                 for i, (w, a) in enumerate(adv_arp_tuple):
                     if i == id:
                         a.setStartValue(0)
@@ -2813,7 +2813,7 @@ class Editor(QtGui.QMainWindow):
                 value = randrange(start, end+1, step)
                 setattr(self, p.attr, value)
             except Exception as e:
-                print e
+                print(e)
         self.reset_advanced_widgets()
         self.notify = True
 #        self.display.edited_widget.show()
@@ -3719,7 +3719,7 @@ class Editor(QtGui.QMainWindow):
     def logo_click(self, event):
         rect = QtCore.QRect(52, 12, 8, 8)
         if not rect.contains(event.pos()): return
-        from commands import getoutput
+        from subprocess import getoutput
         getoutput('aplay {}'.format(local_path('.bw_secret')))
 
     def create_osc1(self):

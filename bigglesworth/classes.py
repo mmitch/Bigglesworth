@@ -1,6 +1,6 @@
 # *-* coding: utf-8 *-*
 
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 import re
 import pickle
 import simplejson
@@ -39,7 +39,7 @@ class VersionRequest(QtCore.QObject):
         self.timer.start()
         try:
             try:
-                res = urllib2.urlopen(self.release_url)
+                res = urllib.request.urlopen(self.release_url)
                 self.timer.stop()
                 self.check(simplejson.loads(res.read()))
             except:
@@ -56,7 +56,7 @@ class VersionRequest(QtCore.QObject):
 
     def check(self, contents):
         def newer_check(check_txt):
-            check_maj, check_min, check_rev = map(int, check_txt.split('.'))
+            check_maj, check_min, check_rev = list(map(int, check_txt.split('.')))
             if check_maj > MAJ_VERSION:
                 return True
             if check_min > MIN_VERSION:
@@ -111,7 +111,7 @@ class VersionRequest(QtCore.QObject):
                 name = name[len(tag):].lstrip(' - ')
             html += '<a name={tag}></a><div class="version">{tag}<span style="font-weight: normal;"> - {name}</span></div>'.format(tag=tag, name=name)
             date = QtCore.QDateTime.fromString(release['published_at'], 'yyyy-MM-ddTHH:mm:ssZ').toString('dd/MM/yyyy')
-            html += u'<div class="release">Release date: {date}<br />'.format(date=unicode(date.toUtf8(), encoding='utf-8'))
+            html += '<div class="release">Release date: {date}<br />'.format(date=str(date.toUtf8(), encoding='utf-8'))
             html += 'Availability: <ul>'
             html += '<li>Linux (source): <a href="{tar}">tar</a>, <a href="{zip}">zip</a></li>'
             for asset in release['assets']:
@@ -120,12 +120,12 @@ class VersionRequest(QtCore.QObject):
                     os = 'Windows'
                 elif file_name.endswith('.dmg'):
                     os = 'OSX'
-                html += u'<li>{os}: <a href="{url}">Direct link</a></li>'.format(os=os, url=asset['browser_download_url'])
+                html += '<li>{os}: <a href="{url}">Direct link</a></li>'.format(os=os, url=asset['browser_download_url'])
             html += '</ul>'
             html += '</div>'
             md = markdown2.Markdown(extras=['cuddled-lists'])
             body = md.convert(re.sub(r'(?<=[a-zA-Z0-9\.\;])\r?\n(?<![a-zA-Z0-9])', '    \n', release['body']))
-            html += u'<div class="content">{body}</div>'.format(body=body)
+            html += '<div class="content">{body}</div>'.format(body=body)
             if i < len(contents) - 1:
                 html += '<hr />'
             else:
@@ -145,17 +145,17 @@ class Wavetable(QtCore.QObject):
     def __init__(self, data):
         QtCore.QObject.__init__(self)
         self.splitted_values = []
-        for w in xrange(64):
+        for w in range(64):
             data_iter = iter(data[w * 410 + 8:w * 410 + 392])
             values = []
-            for s in xrange(128):
-                value = (data_iter.next() << 14) + (data_iter.next() << 7) + data_iter.next()
+            for s in range(128):
+                value = (next(data_iter) << 14) + (next(data_iter) << 7) + next(data_iter)
                 if value >= 1048576:
                     value -= 2097152
                 values.append(value)
             self.splitted_values.append(values)
         self.slot = data[5]
-        self.name = ''.join([str(unichr(l)) if l!=127 else '°' for l in data[392:406]])
+        self.name = ''.join([str(chr(l)) if l!=127 else '°' for l in data[392:406]])
 
     @property
     def values(self):
@@ -166,21 +166,21 @@ class Wavetable(QtCore.QObject):
             wt_data[5] = slot
 
     def setName(self, name):
-        print 'son qui'
-        print self.splitted_values[0][392:406]
+        print('son qui')
+        print(self.splitted_values[0][392:406])
         if isinstance(name, QtCore.QString):
-            name = unicode(name.toUtf8(), encoding='utf-8')
+            name = str(name.toUtf8(), encoding='utf-8')
         name = name.ljust(14)
         name_values = []
         for char in name:
-            if char == u'°':
+            if char == '°':
                 name_values.append(127)
             else:
                 name_values.append(ord(char))
         for wt_data in self.splitted_values:
             wt_data[392:406] = name_values
-        print 'ok'
-        print self.splitted_values[0][392:406]
+        print('ok')
+        print(self.splitted_values[0][392:406])
 
 
 class Sound(QtCore.QObject):
@@ -197,7 +197,7 @@ class Sound(QtCore.QObject):
             self._bank = data[0]
             self._prog = data[1]
             self._data = data[2:]
-            self._name = ''.join([str(unichr(l)) if l != 127 else u'°' for l in self.data[363:379]])
+            self._name = ''.join([str(chr(l)) if l != 127 else '°' for l in self.data[363:379]])
             cat = self.data[379]
             if cat < len(categories):
                 self._cat = cat
@@ -235,7 +235,7 @@ class Sound(QtCore.QObject):
         return Sound([self.bank, self.prog] + self.data)
 
     def __dir__(self):
-        return self.__dict__.keys() + Params.param_names.keys()
+        return list(self.__dict__.keys()) + list(Params.param_names.keys())
 
     def trait_names(self):
         return None
@@ -248,13 +248,13 @@ class Sound(QtCore.QObject):
             index = Params.index_from_attr(attr)
             return [self.data[index]][0]
         except Exception as Err:
-            print Err
-            print 'attr exception: {}'.format(attr)
-            print '{}:{}, {}'.format(uppercase[self.bank], self.prog, self.name)
+            print(Err)
+            print('attr exception: {}'.format(attr))
+            print('{}:{}, {}'.format(uppercase[self.bank], self.prog, self.name))
             return None
 
     def __setattr__(self, attr, value):
-        if '_done' in self.__dict__.keys() and attr not in self.__dict__.keys():
+        if '_done' in list(self.__dict__.keys()) and attr not in list(self.__dict__.keys()):
             try:
                 index = Params.index_from_attr(attr)
                 self._data[index] = value
@@ -326,7 +326,7 @@ class Sound(QtCore.QObject):
 #        print 'changed name'
 
     def name_reload(self):
-        new = ''.join([str(unichr(l)) for l in self.data[363:379]])
+        new = ''.join([str(chr(l)) for l in self.data[363:379]])
 #        if new == self._name: return
         self._name = new
         self.nameChanged.emit(new)
@@ -369,7 +369,7 @@ class SortedLibrary(object):
                 by_cat[p.cat].append(p)
         self.by_cat = by_cat
         self.by_alpha = {}
-        for letter, sound_list in by_alpha.items():
+        for letter, sound_list in list(by_alpha.items()):
             self.by_alpha[letter] = sorted(sound_list, key=lambda s: s.name.lower())
 
 
@@ -392,7 +392,7 @@ class WavetableLibrary(QtCore.QObject):
         except Exception as e:
             raise BaseException('An error occurred while loading wavetable file {}:\n{}'.format(file_info.fileName(), e))
         wt_slot = data[5]
-        wt_name = ''.join([str(unichr(l)) for l in data[392:406]])
+        wt_name = ''.join([str(chr(l)) for l in data[392:406]])
         name_item = QtGui.QStandardItem(wt_name)
         slot_item = QtGui.QStandardItem(str(wt_slot))
         date_item = QtGui.QStandardItem(file_info.lastModified().toString(QtCore.Qt.SystemLocaleShortDate))
@@ -408,7 +408,7 @@ class WavetableLibrary(QtCore.QObject):
             try:
                 self.add_local_sysex(file_info)
             except Exception as e:
-                print e
+                print(e)
 
     def count(self):
         return self.model.rowCount()
@@ -468,22 +468,23 @@ class WavetableLibrary(QtCore.QObject):
             with open(str(wavetable_path.toUtf8()), 'rb') as sf:
                 sysex_list = list(ord(i) for i in sf.read())
             wavetable_values = []
-            for w in xrange(64):
+            for w in range(64):
                 data = iter(sysex_list[w * 410 + 8:w * 410 + 392])
                 values = []
-                for s in xrange(128):
-                    value = (data.next() << 14) + (data.next() << 7) + data.next()
+                for s in range(128):
+                    value = (next(data) << 14) + (next(data) << 7) + next(data)
                     if value >= 1048576:
                         value -= 2097152
                     values.append(value)
                 wavetable_values.append(values)
             slot = sysex_list[5]
-            name = ''.join([str(unichr(l)) for l in sysex_list[392:406]])
+            name = ''.join([str(chr(l)) for l in sysex_list[392:406]])
             self.wavetable_data[uid] = wavetable_values, slot, name
             wavetable_data = wavetable_values, slot, name
         return wavetable_data
 
-    def __setitem__(self, uid, (wavetable_values, slot, name)):
+    def __setitem__(self, uid, xxx_todo_changeme):
+        (wavetable_values, slot, name) = xxx_todo_changeme
         if uid not in self.wavetable_data:
 #            uid = uuid4()
             self.wavetable_data[uid] = wavetable_values, slot, name
@@ -509,11 +510,11 @@ class WavetableLibrary(QtCore.QObject):
         sysex_data = []
         values_iter = iter(wavetable_values)
         wavetable_data_list = []
-        for n in xrange(64):
+        for n in range(64):
             sysex_data.extend([INIT, IDW, IDE, self.main.blofeld_id, WTBD, slot, n, 0])
             values = []
-            for i in xrange(128):
-                value = values_iter.next()
+            for i in range(128):
+                value = next(values_iter)
                 values.append(value)
                 if value < 0:
                     value = pow21 + value
@@ -754,7 +755,7 @@ class LibraryProxy(QtGui.QSortFilterProxyModel):
         if not len(self.filter_columns) and not self.text_filter:
             return True
         model = self.sourceModel()
-        if len(self.filter_columns) and any([True for column, index in self.filter_columns.items() if model.item(row, column).data(roles_dict[column]) != index]):
+        if len(self.filter_columns) and any([True for column, index in list(self.filter_columns.items()) if model.item(row, column).data(roles_dict[column]) != index]):
             return False
         if not self.text_filter:
             return True
@@ -787,7 +788,7 @@ class LoadingThread(QtCore.QObject):
             try:
                 sound_list = self.load_library()
             except Exception as e:
-                print e
+                print(e)
 #                print 'personal library not found, reverting to default (factory 200802)'
                 sound_list = self.load_midi(local_path('presets/blofeld_fact_200802.mid'))
         else:
@@ -831,7 +832,7 @@ class LoadingThread(QtCore.QObject):
                 pass
             old_path = local_path('presets/personal_library')
             if path.exists(old_path):
-                print 'moving old library'
+                print('moving old library')
                 copy(old_path, data_path)
             else:
                 raise
@@ -865,7 +866,7 @@ class SettingsGroup(object):
                         else:
                             v = float(v)
                     except Exception as e:
-                        print e
+                        print(e)
                     _value.append(v)
                 value = _value
             elif isinstance(value, QtCore.QString):
@@ -916,7 +917,7 @@ class SettingsGroup(object):
         self._settings.endGroup()
 
     def __setattr__(self, name, value):
-        if '_done' in self.__dict__.keys():
+        if '_done' in list(self.__dict__.keys()):
             if not isinstance(value, SettingsGroup):
                 dname = self._encode(name)
                 if len(self._group):
@@ -956,7 +957,7 @@ class SettingsGroup(object):
                 obj.__class__.__call__ = lambda x, y=None, save=False, orig=orig: orig
             return obj
         except AttributeError:
-            print 'Setting {} not found, returning default'.format(name[4:])
+            print('Setting {} not found, returning default'.format(name[4:]))
             obj = type('obj', (object,), {})()
             obj.__class__.__call__ = lambda x, y=None, save=False: y if not save else save_func(y)
             return obj

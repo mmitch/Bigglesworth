@@ -7,17 +7,17 @@ from bisect import bisect_left
 from PyQt4 import QtGui
 from PyQt4 import QtCore
 
-from midiutils import NoteIds, NoteNames
-from utils import getAlignMask
+from .midiutils import NoteIds, NoteNames
+from .utils import getAlignMask
 
-ADSR, ADS1DS2R, ONESHOT, LOOPS1S2, LOOPALL = range(5)
+ADSR, ADS1DS2R, ONESHOT, LOOPS1S2, LOOPALL = list(range(5))
 VERTICAL = QtCore.Qt.Vertical
 HORIZONTAL = QtCore.Qt.Horizontal
 TOP = QtCore.Qt.TopSection
 BOTTOM = QtCore.Qt.BottomSection
 LEFT = QtCore.Qt.LeftSection
 RIGHT = QtCore.Qt.RightSection
-FROM, TO, EXT, INT = range(4)
+FROM, TO, EXT, INT = list(range(4))
 
 class Key(QtGui.QGraphicsWidget):
     def __init__(self, parent):
@@ -1460,7 +1460,7 @@ class Envelope(QtGui.QWidget):
         self.envelopeChanged.emit(self.mode)
 
     def setValue(self, value_dict):
-        for name, value in value_dict.items():
+        for name, value in list(value_dict.items()):
             getattr(self, 'set{}'.format(name.replace(' ', '')))(value)
 
     def setAttack(self, value):
@@ -1609,13 +1609,13 @@ class Envelope(QtGui.QWidget):
             self.sustain_line.hide()
             self.decay2_cursor.show()
         if not self.show_points:
-            for c in self.cursors.keys():
+            for c in list(self.cursors.keys()):
                 c.hide()
 
     def setShowPoints(self, state):
         self.show_points = state
         if not state:
-            for c in self.cursors.keys():
+            for c in list(self.cursors.keys()):
                 c.hide()
             return
         if self.mode == ADSR:
@@ -1624,7 +1624,7 @@ class Envelope(QtGui.QWidget):
             hide = [self.sustain_cursor, self.sustain_line]
         else:
             hide = []
-        for c in self.cursors.keys():
+        for c in list(self.cursors.keys()):
             c.setVisible(False if c in hide else True)
 
 
@@ -1933,7 +1933,7 @@ class Envelope(QtGui.QWidget):
         if point:
             points = [point] + self.cursors_update[point]
         else:
-            points = self.cursors_update.keys()
+            points = list(self.cursors_update.keys())
         x = self.env_rect.x()
         y = self.env_rect.y()+self.env_rect.height()
         for p in points:
@@ -2741,7 +2741,7 @@ class Dial(QtGui.QWidget):
                 self.setValue(value)
                 return
             except Exception as Err:
-                print Err
+                print(Err)
                 return
         x = self.mouse_pos.x()
         y = self.mouse_pos.y()

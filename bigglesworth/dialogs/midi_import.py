@@ -74,7 +74,7 @@ class ParamFixDialog(QtGui.QDialog):
                     value_item = NoEditItem(str(getattr(sound, param.attr)))
                     range_item = NoEditItem('{} - {}'.format(*param.range[:2]))
                     edited_item = QtGui.QStandardItem('Unchanged')
-                    edited_item.setData(['{} - {}'.format(i, v) for i, v in zip(xrange(param.range[0], param.range[1] + 1), param.values)], ValuesRole)
+                    edited_item.setData(['{} - {}'.format(i, v) for i, v in zip(range(param.range[0], param.range[1] + 1), param.values)], ValuesRole)
                     edited_item.setData(-1, EditedRole)
                     self.edited[sound].append((param, edited_item))
                     sound_item.setChild(child, param_item)
@@ -90,7 +90,7 @@ class ParamFixDialog(QtGui.QDialog):
                         value_item = NoEditItem(str(value))
                         range_item = NoEditItem('0 - {}'.format(len(values) - 1))
                         edited_item = QtGui.QStandardItem('Unchanged')
-                        edited_item.setData(['{} - {}'.format(i, v) for i, v in zip(xrange(len(values)), values)], ValuesRole)
+                        edited_item.setData(['{} - {}'.format(i, v) for i, v in zip(range(len(values)), values)], ValuesRole)
                         edited_item.setData(-1, EditedRole)
                         self.edited[sound].append((param, short, edited_item))
                         main_item.setChild(sub_id, param_item)
@@ -127,12 +127,12 @@ class ParamFixDialog(QtGui.QDialog):
                 item.setData(len(values) - 1, EditedRole)
                 item.setText(values[-1])
 
-        for row in xrange(self.model.rowCount()):
+        for row in range(self.model.rowCount()):
             parent = self.model.item(row, 0)
-            for child_row in xrange(parent.rowCount()):
+            for child_row in range(parent.rowCount()):
                 child = parent.child(child_row, 0)
                 if child.hasChildren():
-                    for sub_row in xrange(child.rowCount()):
+                    for sub_row in range(child.rowCount()):
                         _set_data(child.child(sub_row, 3))
                 else:
                     _set_data(parent.child(child_row, 3))
@@ -143,7 +143,7 @@ class ParamFixDialog(QtGui.QDialog):
     def apply(self):
         if not self.ignore_confirm():
             return
-        for sound, edited in self.edited.items():
+        for sound, edited in list(self.edited.items()):
             if not edited: continue
             for data in edited:
                 param = data[0]
@@ -161,7 +161,7 @@ class ParamFixDialog(QtGui.QDialog):
         self.accept()
 
     def ignore_confirm(self):
-        if any(True for params in self.edited.values() for field in params if (field and field[-1].data(EditedRole).toPyObject() < 0)):
+        if any(True for params in list(self.edited.values()) for field in params if (field and field[-1].data(EditedRole).toPyObject() < 0)):
             res = QtGui.QMessageBox.question(
                                              self, 'Invalid data', 
                                              'Some invalid data is still present in the library, do you want to proceed?', 

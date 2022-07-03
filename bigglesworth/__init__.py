@@ -9,15 +9,15 @@ from os import path, makedirs
 from string import uppercase
 from PyQt4 import QtCore, QtGui
 
-from midiutils import *
-from const import *
-from utils import *
-from classes import *
-from widgets import *
-from dialogs import *
+from .midiutils import *
+from .const import *
+from .utils import *
+from .classes import *
+from .widgets import *
+from .dialogs import *
 
-from editor import Editor
-from wavetable import WaveTableEditor
+from .editor import Editor
+from .wavetable import WaveTableEditor
 
 def process_args():
     parser = argparse.ArgumentParser()
@@ -28,16 +28,16 @@ def process_args():
     parser.add_argument('-e', '--editor', metavar='BXXX', nargs='?', const=True, help='Open Sound editor (with INIT sound or optional sound XXX from bank B, eg. A001)')
     res, unknown = parser.parse_known_args()
     if unknown:
-        print 'Unknown parameters ignored:'
+        print('Unknown parameters ignored:')
         for p in unknown:
-            print p
+            print(p)
     return res
 
 args = process_args()
 if sys.platform in ('win32', 'darwin') or args.rtmidi:
-    from rt import MidiDevice
+    from .rt import MidiDevice
 else:
-    from alsa import MidiDevice
+    from .alsa import MidiDevice
 
 class BigglesworthObject(QtCore.QObject):
     midi_lock = QtCore.pyqtSignal(bool)
@@ -621,7 +621,7 @@ class BigglesworthObject(QtCore.QObject):
 
     def midi_connect(self):
         if not (self.blofeld_autoconnect or self.remember_connections): return
-        for cid, client in self.graph.client_id_dict.items():
+        for cid, client in list(self.graph.client_id_dict.items()):
             if self.blofeld_autoconnect:
                 if self.backend == RTMIDI:
                     if sys.platform == 'win32':
@@ -660,7 +660,7 @@ class BigglesworthObject(QtCore.QObject):
 
     def output_event(self, event):
         if self.debug_sysex and event.type == SYSEX:
-            print event.sysex
+            print(event.sysex)
         if self.backend == ALSA:
             alsa_event = event.get_event()
             alsa_event.source = self.output.client.id, self.output.id
@@ -928,7 +928,7 @@ class BigglesworthObject(QtCore.QObject):
             dev_type = 'Blofeld Desktop'
         else:
             dev_type = 'Blofeld Keyboard'
-        dev_version = ''.join([str(unichr(l)) for l in sysex[10:14]]).strip()
+        dev_version = ''.join([str(chr(l)) for l in sysex[10:14]]).strip()
         
         QtGui.QMessageBox.information(parent, 'Device informations', 
                                       'Device info:\n\nManufacturer: {}\nModel: {}\nType: {}\nVersion: {}'.format(
@@ -1261,7 +1261,7 @@ def main():
     cursor_list.extend((QtCore.Qt.SizeAllCursor, UpCursorClass(), DownCursorClass(), LeftCursorClass(), RightCursorClass()))
     BigglesworthObject(app, args)
     sys.exit(app.exec_())
-    print 'Blofix has been quit!'
+    print('Blofix has been quit!')
 
 if __name__ == '__main__':
     main()
