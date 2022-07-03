@@ -2,7 +2,7 @@
 
 from os import stat as file_stat
 from os.path import exists as file_exists
-from string import uppercase
+from string import ascii_uppercase
 from collections import OrderedDict
 from PyQt4 import QtCore, QtGui
 
@@ -244,7 +244,7 @@ class SummaryDialog(QtGui.QDialog):
         edit_btn.setIcon(dial_icon)
         self.buttonBox.addButton(edit_btn, QtGui.QDialogButtonBox.AcceptRole)
 
-        self.bank_combo.addItems([uppercase[l] for l in range(8)])
+        self.bank_combo.addItems([ascii_uppercase[l] for l in range(8)])
         self.import_btn.clicked.connect(self.open)
         self.buttonBox.button(QtGui.QDialogButtonBox.Discard).clicked.connect(self.reject)
         self.summary_widget.setFocus()
@@ -286,7 +286,7 @@ class SummaryDialog(QtGui.QDialog):
         else:
             res = QtGui.QMessageBox.warning(
                                        self, 'Confirm sound dump', 
-                                       'You are about to dump a sound to the Blofeld\'s memory at index {}{:03}, overwriting the existing sound.\n\nDo you want to proceed?'.format(uppercase[self.bank_combo.currentIndex()], self.prog_spin.value()), 
+                                       'You are about to dump a sound to the Blofeld\'s memory at index {}{:03}, overwriting the existing sound.\n\nDo you want to proceed?'.format(ascii_uppercase[self.bank_combo.currentIndex()], self.prog_spin.value()), 
                                        QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel
                                        )
             if res == QtGui.QMessageBox.Ok:

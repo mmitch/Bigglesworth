@@ -1,6 +1,6 @@
 # *-* coding: utf-8 *-*
 
-from string import uppercase
+from string import ascii_uppercase
 from PyQt4 import QtGui
 from bigglesworth.utils import load_ui
 
@@ -26,7 +26,7 @@ class SoundDumpDialog(QtGui.QDialog):
         self.summary_widget.setSoundData(sound.data)
         self.editor_chk.setChecked(True)
         self.store_chk.setChecked(False)
-        self.bank_combo.addItems([uppercase[b] for b in range(self.main.blofeld_library.banks)])
+        self.bank_combo.addItems([ascii_uppercase[b] for b in range(self.main.blofeld_library.banks)])
         self.dump_sound_lbl.setText(sound.name)
         if not None in self.main.blofeld_current:
             bank, prog = self.main.blofeld_current

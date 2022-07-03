@@ -9,7 +9,7 @@ from uuid import uuid4
 from os import path, makedirs
 from itertools import chain
 from shutil import copy
-from string import uppercase, ascii_letters
+from string import ascii_uppercase, ascii_letters
 from PyQt4 import QtCore, QtGui
 
 from bigglesworth.libs import midifile
@@ -221,7 +221,7 @@ class Sound(QtCore.QObject):
             if param.range == 'reserved': continue
             if isinstance(param.values, AdvParam):
 #                if value & param.values.forbidden:
-#                    print 'FORBIDDEN! {}{:03} "{}" {}: {:07b} {:07b}'.format(uppercase[self.bank], self.prog, self.name, param.attr, param.values.forbidden, value)
+#                    print 'FORBIDDEN! {}{:03} "{}" {}: {:07b} {:07b}'.format(ascii_uppercase[self.bank], self.prog, self.name, param.attr, param.values.forbidden, value)
                 res = param.values.is_valid(value)
                 if res is not True:
                     invalid.append((i, res))
@@ -250,7 +250,7 @@ class Sound(QtCore.QObject):
         except Exception as Err:
             print(Err)
             print('attr exception: {}'.format(attr))
-            print('{}:{}, {}'.format(uppercase[self.bank], self.prog, self.name))
+            print('{}:{}, {}'.format(ascii_uppercase[self.bank], self.prog, self.name))
             return None
 
     def __setattr__(self, attr, value):
@@ -354,11 +354,11 @@ class SortedLibrary(object):
     def __init__(self, library):
         self.by_bank = library.data
         self.by_cat = {i: [] for i in range(len(categories))}
-        self.by_alpha = {l: [] for l in ['0..9']+list(uppercase)}
+        self.by_alpha = {l: [] for l in ['0..9']+list(ascii_uppercase)}
 
     def reload(self):
         by_cat = {i: [] for i in range(len(categories))}
-        by_alpha = {l: [] for l in ['0..9']+list(uppercase)}
+        by_alpha = {l: [] for l in ['0..9']+list(ascii_uppercase)}
         for b, progs in enumerate(self.by_bank):
             for p in progs:
                 if p is None: continue
@@ -567,10 +567,10 @@ class Library(QtCore.QObject):
         self.data[bank][prog] = sound
 #        self.sound_index[sound] = bank, prog
 
-        index_item = QtGui.QStandardItem('{}{:03}'.format(uppercase[bank], prog+1))
+        index_item = QtGui.QStandardItem('{}{:03}'.format(ascii_uppercase[bank], prog+1))
         index_item.setData(bank*128+prog, IndexRole)
         index_item.setEditable(False)
-        bank_item = QtGui.QStandardItem(uppercase[bank])
+        bank_item = QtGui.QStandardItem(ascii_uppercase[bank])
 #        bank_item.setData(bank, UserRole)
         bank_item.setData(bank, BankRole)
         bank_item.setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignCenter)
@@ -598,7 +598,7 @@ class Library(QtCore.QObject):
         sound.catChanged.connect(lambda cat, bank=bank, item=cat_item: self.soundSetCategory(item, bank, cat))
         sound.edited.connect(lambda state, item=status_item: item.setData(state, EditedRole))
 
-        found = self.model.findItems('{}{:03}'.format(uppercase[bank], prog+1), QtCore.Qt.MatchFixedString, 0)
+        found = self.model.findItems('{}{:03}'.format(ascii_uppercase[bank], prog+1), QtCore.Qt.MatchFixedString, 0)
         if found:
             self.model.takeRow(found[0].row())
 
@@ -660,7 +660,7 @@ class Library(QtCore.QObject):
         menu.addMenu(by_bank)
         for id, bank in enumerate(self.sorted.by_bank):
             if not any(bank): continue
-            bank_menu = QtGui.QMenu(uppercase[id], by_bank)
+            bank_menu = QtGui.QMenu(ascii_uppercase[id], by_bank)
             by_bank.addMenu(bank_menu)
             for sound in bank:
                 if sound is None: continue
@@ -985,7 +985,7 @@ class SettingsObj(object):
             self._settings.endGroup()
 
     def __getattr__(self, name):
-        if not (name.startswith('g') and name[1] in uppercase):
+        if not (name.startswith('g') and name[1] in ascii_uppercase):
             raise AttributeError(name)
         name = name[1:]
         self._settings.beginGroup(name)

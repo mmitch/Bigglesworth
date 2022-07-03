@@ -3,7 +3,7 @@
 
 import sys
 import pickle
-from string import uppercase
+from string import ascii_uppercase
 from itertools import cycle
 from random import randrange
 from PyQt4 import QtCore, QtGui
@@ -553,7 +553,7 @@ class SmallTextWidget(BaseTextWidget):
 class BankTextWidget(SmallTextWidget):
     def __init__(self, parent):
         SmallTextWidget.__init__(self, 'A', parent)
-        max_letters = max([self.font_metrics.width(l) for l in uppercase])
+        max_letters = max([self.font_metrics.width(l) for l in ascii_uppercase])
         self.setMinimumSize(max_letters, self.font_metrics.height())
         self.setMaximumSize(max_letters, self.font_metrics.height())
 
@@ -561,7 +561,7 @@ class BankTextWidget(SmallTextWidget):
 class ProgTextWidget(SmallTextWidget):
     def __init__(self, parent):
         SmallTextWidget.__init__(self, '001', parent)
-#        max_letters = max([self.font_metrics.width(l) for l in uppercase])
+#        max_letters = max([self.font_metrics.width(l) for l in ascii_uppercase])
         max_digits = max([self.font_metrics.width(str(i)) for i in range(10)])
         width = max_digits*3
         self.setMinimumSize(width, self.font_metrics.height())
@@ -2190,7 +2190,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
             self.bank.text = '?'
             self.prog.text = '?'
         else:
-            self.bank.text = uppercase[sound.bank]
+            self.bank.text = ascii_uppercase[sound.bank]
             self.prog.text = '{:03}'.format(sound.prog+1)
         self.update()
         self.panel.update()
@@ -2335,7 +2335,7 @@ class Editor(QtGui.QMainWindow):
         dump_request_current_action = QtGui.QAction('Request dump for current sound', self)
         dump_request_current_action.triggered.connect(lambda: self.dump_request.emit((self.sound.bank, self.sound.prog)))
         self.sound_changed.connect(lambda bank, prog: [dump_request_current_action.setEnabled(True if bank <= self.blofeld_library.banks else False), 
-                                                       dump_request_current_action.setText('Request dump for sound{}'.format(' {}{:03}'.format(uppercase[bank], prog+1) if bank <= self.blofeld_library.banks else ''))
+                                                       dump_request_current_action.setText('Request dump for sound{}'.format(' {}{:03}'.format(ascii_uppercase[bank], prog+1) if bank <= self.blofeld_library.banks else ''))
                                                        ])
         dump_request_buffer_action = QtGui.QAction('Request dump for Sound Edit buffer', self)
         dump_request_buffer_action.triggered.connect(lambda: self.dump_request.emit((0x7f, 0x0)))
@@ -2877,7 +2877,7 @@ class Editor(QtGui.QMainWindow):
         else:
             bank, prog = dest
             res = QtGui.QMessageBox.warning(self, 'Dump sound to Blofeld', 
-                                            'You are going to send a sound dump to the Blofeld at location "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(uppercase[bank], prog+1), 
+                                            'You are going to send a sound dump to the Blofeld at location "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(ascii_uppercase[bank], prog+1), 
                                             QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel
                                             )
             if res != QtGui.QMessageBox.Ok: return

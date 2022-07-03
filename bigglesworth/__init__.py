@@ -6,7 +6,7 @@ import argparse
 import pickle
 import re
 from os import path, makedirs
-from string import uppercase
+from string import ascii_uppercase
 from PyQt4 import QtCore, QtGui
 
 from .midiutils import *
@@ -335,7 +335,7 @@ class BigglesworthObject(QtCore.QObject):
             if not res:
                 sound = None, None
             else:
-                bank = uppercase.index(res.groups()[0].upper())
+                bank = ascii_uppercase.index(res.groups()[0].upper())
                 prog = int(res.groups()[1]) - 1
                 if prog < 0:
                     prog = 0
@@ -744,7 +744,7 @@ class BigglesworthObject(QtCore.QObject):
             dump_all = self.dump_bulk_count/128
             self.dump_bulk_timer.stop()
             self.dump_bulk_timer.start()
-            self.dump_win.bank_lbl.setText('{}{}'.format(uppercase[bank], ' {}/8'.format(bank+1) if dump_all else ''))
+            self.dump_win.bank_lbl.setText('{}{}'.format(ascii_uppercase[bank], ' {}/8'.format(bank+1) if dump_all else ''))
             self.dump_win.sound_lbl.setText('{:03}/{}'.format(prog+1+(128*bank if dump_all else 0), 1024 if dump_all else 128))
             dump_time = None
             if dump_all:
@@ -796,7 +796,7 @@ class BigglesworthObject(QtCore.QObject):
                 self.blofeld_library.addSoundBulk(self.dump_temp)
                 self.dump_win.accept()
                 return
-        self.dump_win.bank_lbl.setText('{}{}'.format(uppercase[bank], ' {}/8'.format(bank+1) if dump_all else ''))
+        self.dump_win.bank_lbl.setText('{}{}'.format(ascii_uppercase[bank], ' {}/8'.format(bank+1) if dump_all else ''))
         self.dump_win.sound_lbl.setText('{:03}/{}'.format(prog+1+(128*bank if dump_all else 0), 1024 if dump_all else 128))
         dump_time = None
         if dump_all:
@@ -854,7 +854,7 @@ class BigglesworthObject(QtCore.QObject):
             sound = dump_bulk_list.pop(0)
             self.dump_send(sound)
             current = tot_sounds-len(dump_bulk_list)
-            self.dump_send_win.bank_lbl.setText('{} {}/{}'.format(uppercase[sound.bank], tot_banks-last[0]+sound.bank, tot_banks))
+            self.dump_send_win.bank_lbl.setText('{} {}/{}'.format(ascii_uppercase[sound.bank], tot_banks-last[0]+sound.bank, tot_banks))
             self.dump_send_win.sound_lbl.setText('{:03} {}/{}'.format(sound.prog+1, current, tot_sounds))
             self.dump_send_win.progress.setValue(current)
             dump_time = None
@@ -889,7 +889,7 @@ class BigglesworthObject(QtCore.QObject):
             sound = sound_list.pop(0)
             self.dump_send(sound)
             current = tot_sounds-len(sound_list)
-            self.dump_send_win.bank_lbl.setText('{} {}/{}'.format(uppercase[sound.bank], tot_banks-last[0]+sound.bank, tot_banks))
+            self.dump_send_win.bank_lbl.setText('{} {}/{}'.format(ascii_uppercase[sound.bank], tot_banks-last[0]+sound.bank, tot_banks))
             self.dump_send_win.sound_lbl.setText('{:03} {}/{}'.format(sound.prog+1, current, tot_sounds))
             self.dump_send_win.progress.setValue(current)
             dump_time = None
@@ -996,9 +996,9 @@ class Librarian(QtGui.QMainWindow):
         self.loading_complete = False
         self.edit_mode = False
 
-        self.bank_dump_combo.addItems(['All']+[l for l in uppercase[:8]])
+        self.bank_dump_combo.addItems(['All']+[l for l in ascii_uppercase[:8]])
         self.sound_dump_combo.addItems(['All']+[str(s) for s in range(1, 129)])
-        self.bank_filter_combo.addItems(['All']+[l for l in uppercase[:8]])
+        self.bank_filter_combo.addItems(['All']+[l for l in ascii_uppercase[:8]])
         self.cat_filter_combo.addItem('All')
         for cat in categories:
             self.cat_filter_combo.addItem(cat, cat)
@@ -1135,7 +1135,7 @@ class Librarian(QtGui.QMainWindow):
             self.dump_request.emit((sound.bank, sound.prog))
         elif res == dump_send_item:
             res = QtGui.QMessageBox.question(self, 'Dump selected sound',
-                                             'You are going to send a sound dump to the Blofeld at location "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(uppercase[sound.bank], sound.prog+1), 
+                                             'You are going to send a sound dump to the Blofeld at location "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(ascii_uppercase[sound.bank], sound.prog+1), 
                                              QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel
                                              )
             if not res == QtGui.QMessageBox.Ok: return
@@ -1144,7 +1144,7 @@ class Librarian(QtGui.QMainWindow):
             first = self.blofeld_model.item(min(rows), SOUND).data(SoundRole).toPyObject()
             last = self.blofeld_model.item(max(rows), SOUND).data(SoundRole).toPyObject()
             res = QtGui.QMessageBox.question(self, 'Dump selected sounds',
-                                             'You are going to send a sound dump to the Blofeld for locations "{}{:03}" through "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(uppercase[first.bank], first.prog+1, uppercase[last.bank], last.prog+1), 
+                                             'You are going to send a sound dump to the Blofeld for locations "{}{:03}" through "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(ascii_uppercase[first.bank], first.prog+1, ascii_uppercase[last.bank], last.prog+1), 
                                              QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel
                                              )
             if not res == QtGui.QMessageBox.Ok: return
@@ -1156,7 +1156,7 @@ class Librarian(QtGui.QMainWindow):
             last = max(sound_range)
             for row in range(first, last+1):
                 bank, prog = divmod(row, 128)
-                self.blofeld_model.item(row, BANK).setText(uppercase[bank])
+                self.blofeld_model.item(row, BANK).setText(ascii_uppercase[bank])
                 self.blofeld_model.item(row, PROG).setText('{:03}'.format(prog+1))
                 sound = self.blofeld_model.item(row, SOUND).data(SoundRole).toPyObject()
                 sound.bank = bank

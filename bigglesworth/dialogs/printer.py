@@ -1,6 +1,6 @@
 # *-* coding: utf-8 *-*
 
-from string import digits, uppercase
+from string import digits, ascii_uppercase
 from PyQt4 import QtCore, QtGui
 from bigglesworth.utils import load_ui
 
@@ -46,7 +46,7 @@ class PrinterPageRect(QtGui.QGraphicsRectItem):
 
     def compute_metrics(self):
         self.font_metrics = QtGui.QFontMetrics(self.font)
-        cat = max([self.font_metrics.width(c) for c in digits+uppercase])*4 + self.font_metrics.width('    ')
+        cat = max([self.font_metrics.width(c) for c in digits+ascii_uppercase])*4 + self.font_metrics.width('    ')
         name = max([self.font_metrics.width(c) for c in self.chars])*16 + self.spacing
         self.prog_size = cat+name
 
@@ -141,7 +141,7 @@ class MultiCombo(QtGui.QComboBox):
         self.model.appendRow(none_item)
         self.bank_items = []
         for i in range(8):
-            item = QtGui.QStandardItem(uppercase[i])
+            item = QtGui.QStandardItem(ascii_uppercase[i])
             item.setCheckable(True)
             item.setCheckState(2)
             item.setTristate(False)
@@ -178,7 +178,7 @@ class MultiCombo(QtGui.QComboBox):
         for i, item in enumerate(self.bank_items):
             if not item.checkState(): continue
             selected.append(i)
-        self.state_item.setText(', '.join(uppercase[i] for i in selected) if selected else 'none')
+        self.state_item.setText(', '.join(ascii_uppercase[i] for i in selected) if selected else 'none')
         self.selectionChanged.emit(selected)
         self.setCurrentIndex(0)
 
@@ -334,9 +334,9 @@ class PrintDialog(QtGui.QDialog):
             if b not in self.bank_selection: continue
             sounds = []
             for sound in bank:
-                sounds.append('{}{:03}\t{}'.format(uppercase[sound.bank], sound.prog+1, sound.name))
+                sounds.append('{}{:03}\t{}'.format(ascii_uppercase[sound.bank], sound.prog+1, sound.name))
             if sounds:
-                text += 'Bank {}:\n=======\n'.format(uppercase[sound.bank])
+                text += 'Bank {}:\n=======\n'.format(ascii_uppercase[sound.bank])
                 if cols == 1:
                     text += '\n'.join(sounds)
                 else:

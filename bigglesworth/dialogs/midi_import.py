@@ -1,6 +1,6 @@
 # *-* coding: utf-8 *-*
 
-from string import uppercase
+from string import ascii_uppercase
 from os.path import exists as file_exists
 from PyQt4 import QtCore, QtGui
 
@@ -288,7 +288,7 @@ class MidiImportDialog(QtGui.QDialog):
         self.sounds_table.verticalHeader().setVisible(False)
         self.sounds_table.horizontalHeader().setVisible(True)
         self.sounds_table.verticalHeader().setResizeMode(QtGui.QHeaderView.ResizeToContents)
-        self.bankmap_combo.addItems([uppercase[b] for b in range(8)])
+        self.bankmap_combo.addItems([ascii_uppercase[b] for b in range(8)])
         self.bankmap_btn.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogApplyButton))
 
         self.destination_group.setId(self.sound_buffer_radio, 0)
@@ -297,7 +297,7 @@ class MidiImportDialog(QtGui.QDialog):
 
         self.name_edit.setValidator(QtGui.QRegExpValidator(QtCore.QRegExp('[\x20-\x7f°]*')))
         self.cat_combo.addItems(categories)
-        self.bank_combo.addItems([uppercase[b] for b in range(8)])
+        self.bank_combo.addItems([ascii_uppercase[b] for b in range(8)])
         self.single_dump_btn.setIcon(self.style().standardIcon(QtGui.QStyle.SP_ArrowRight))
         self.apply_btn.setIcon(self.style().standardIcon(QtGui.QStyle.SP_DialogApplyButton))
 
@@ -399,7 +399,7 @@ class MidiImportDialog(QtGui.QDialog):
             bank = self.bank_combo.currentIndex()
             prog = self.prog_spin.value() - 1
             res = QtGui.QMessageBox.question(self, 'Dump selected sound',
-                                             'You are going to send a sound dump to the Blofeld at location "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(uppercase[bank], prog+1), 
+                                             'You are going to send a sound dump to the Blofeld at location "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(ascii_uppercase[bank], prog+1), 
                                              QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel
                                              )
             if not res == QtGui.QMessageBox.Ok: return
@@ -533,7 +533,7 @@ class MidiImportDialog(QtGui.QDialog):
             check.toggled.connect(lambda state, index=row: self.export_set(index, state))
             self.export_list.append(True)
             self.sounds_table.setCellWidget(row, 0, check)
-            bank_item = QtGui.QTableWidgetItem(uppercase[sound.bank] if sound.bank < len(uppercase) else uppercase[-1])
+            bank_item = QtGui.QTableWidgetItem(ascii_uppercase[sound.bank] if sound.bank < len(ascii_uppercase) else ascii_uppercase[-1])
             bank_item.setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
             prog_item = QtGui.QTableWidgetItem('{:03}'.format(sound.prog+1))
             name_item = QtGui.QTableWidgetItem(QtCore.QString.fromUtf8(sound.name))
@@ -543,7 +543,7 @@ class MidiImportDialog(QtGui.QDialog):
             self.sounds_table.setItem(row, 3, name_item)
             self.sounds_table.setItem(row, 4, cat_item)
             sound.nameChanged.connect(name_item.setText)
-            sound.bankChanged.connect(lambda bank, item=bank_item: item.setText(uppercase[bank]))
+            sound.bankChanged.connect(lambda bank, item=bank_item: item.setText(ascii_uppercase[bank]))
         if len(self.sound_list) <= 128:
             allow_remap = True
         else:
