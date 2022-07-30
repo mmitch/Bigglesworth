@@ -200,7 +200,7 @@ class SummaryWidget(QtGui.QSplitter):
 
 
 class FileLabel(QtGui.QLabel):
-    dots = QtCore.QString.fromUtf8('…')
+    dots = '…'
 
     def __init__(self, *args, **kwargs):
         QtGui.QLabel.__init__(self, *args, **kwargs)

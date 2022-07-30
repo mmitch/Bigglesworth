@@ -14,7 +14,6 @@ try:
 except:
     pass
 from time import *
-from PyQt4 import QtCore
 
 
 class Const(object):

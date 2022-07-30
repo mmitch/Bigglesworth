@@ -341,8 +341,6 @@ note_keys = [
              '+', 
              ]
 
-note_keys = [QtCore.QString().fromUtf8(key) for key in note_keys]
-
 init_sound_data = [0, 0, 
                    1, 64, 64, 64, 66, 96, 0, 0, 2, 127, 1, 64, 0, 0, 0, 0, 0, 64, 64, 64, 66, 
                    96, 0, 0, 0, 127, 3, 64, 0, 0, 0, 0, 0, 52, 64, 64, 66, 96, 0, 0, 0, 127, 

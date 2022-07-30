@@ -272,7 +272,7 @@ class DumpDialog(QtGui.QDialog):
         self.name = name
 
     def setIndex(self, index):
-        self.label.setText(QtCore.QString.fromUtf8('Dumping wavetable "{}" to Blofeld slot {}, current wave: {}'.format(str(self.name.toUtf8()), self.slot, index)))
+        self.label.setText('Dumping wavetable "{}" to Blofeld slot {}, current wave: {}'.format(str(self.name.toUtf8()), self.slot, index))
 
     def closeEvent(self, event):
         event.ignore()
@@ -2336,7 +2336,7 @@ class WaveTableEditor(QtGui.QMainWindow):
     def wavelistDragEnterEvent(self, event):
         for fmt in event.mimeData().formats():
             if fmt.toLower().contains('text') or fmt.toLower().contains('string'):
-                s = QtCore.QString(event.mimeData().data(fmt))
+                s = event.mimeData().data(fmt)
                 if s.startsWith('file://'):
                     try:
                         path = str(QtCore.QUrl(s).toLocalFile())
@@ -2363,7 +2363,7 @@ class WaveTableEditor(QtGui.QMainWindow):
         self.wave_accepted_fmt = None
 
     def wavelistDropEvent(self, event):
-        self.load_wave(QtCore.QUrl(QtCore.QString(event.mimeData().data(self.wave_accepted_fmt))).toLocalFile())
+        self.load_wave(QtCore.QUrl(event.mimeData().data(self.wave_accepted_fmt)).toLocalFile())
 
     def setSampleSelection(self, *args):
         sender = self.sender()

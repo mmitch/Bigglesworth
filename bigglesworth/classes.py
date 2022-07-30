@@ -168,7 +168,7 @@ class Wavetable(QtCore.QObject):
     def setName(self, name):
         print('son qui')
         print(self.splitted_values[0][392:406])
-        if isinstance(name, QtCore.QString):
+        if isinstance(name, string):
             name = str(name.toUtf8(), encoding='utf-8')
         name = name.ljust(14)
         name_values = []
@@ -455,7 +455,7 @@ class WavetableLibrary(QtCore.QObject):
                     break
         new_uid = str(uuid4())
         current_data, current_slot, _ = self[uid]
-        self[new_uid] = chain.from_iterable(current_data), current_slot, QtCore.QString(base_name)
+        self[new_uid] = chain.from_iterable(current_data), current_slot, base_name
 
     def nameExists(self, name):
         return True if len(self.model.findItems(name)) else False
@@ -869,7 +869,7 @@ class SettingsGroup(object):
                         print(e)
                     _value.append(v)
                 value = _value
-            elif isinstance(value, QtCore.QString):
+            elif isinstance(value, string):
                 value = str(value)
                 if value == 'true':
                     value = True

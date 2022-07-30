@@ -183,7 +183,7 @@ class ParamFixDialog(QtGui.QDialog):
 
 
 class GrowingFileLabel(QtGui.QLabel):
-    dots = QtCore.QString.fromUtf8('…')
+    dots = '…'
 
     def __init__(self, *args, **kwargs):
         QtGui.QLabel.__init__(self, *args, **kwargs)
@@ -498,7 +498,7 @@ class MidiImportDialog(QtGui.QDialog):
         self.sounds_table.selectRow(0)
 
     def midi_load(self, path):
-        if isinstance(path, QtCore.QString):
+        if isinstance(path, string):
             path = str(path.toUtf8())
         sound_list = []
         try:
@@ -536,7 +536,7 @@ class MidiImportDialog(QtGui.QDialog):
             bank_item = QtGui.QTableWidgetItem(ascii_uppercase[sound.bank] if sound.bank < len(ascii_uppercase) else ascii_uppercase[-1])
             bank_item.setTextAlignment(QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
             prog_item = QtGui.QTableWidgetItem('{:03}'.format(sound.prog+1))
-            name_item = QtGui.QTableWidgetItem(QtCore.QString.fromUtf8(sound.name))
+            name_item = QtGui.QTableWidgetItem(sound.name)
             cat_item = QtGui.QTableWidgetItem(categories[sound.cat] if sound.cat < len(categories) else categories[-1])
             self.sounds_table.setItem(row, 1, bank_item)
             self.sounds_table.setItem(row, 2, prog_item)

@@ -403,7 +403,7 @@ class BigglesworthObject(QtCore.QObject):
                         if not self.wavetable_library.nameExists(name):
                             break
             uid = str(uuid4())
-            self.wavetable_library[uid] = wavetable.values, wavetable.slot, QtCore.QString(name)
+            self.wavetable_library[uid] = wavetable.values, wavetable.slot, name
             self.new_wavetable(uid)
         else:
             self.midi_import.setSource(*res)

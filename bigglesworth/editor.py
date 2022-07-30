@@ -348,7 +348,6 @@ class ProgLabelTextWidget(BaseTextWidget):
         self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
         while len(self.text) < 16:
             self.text += ' '
-        self.text = QtCore.QString.fromUtf8(self.text)
         self.text_list = QtCore.QStringList([l for l in self.text])
         self.cursor = TextCursorWidget(self, self.font_metrics.ascent())
         self.cursor.hide()
@@ -371,9 +370,9 @@ class ProgLabelTextWidget(BaseTextWidget):
 
     def setChar(self, pos, char):
         if char == 127:
-            readable = QtCore.QString.fromUtf8('°')
+            readable = '°'
         else:
-            readable = QtCore.QString(chr(char))
+            readable = chr(char)
         self.text_list[pos] = readable
         self.text = self.text_list.join('')
         self.update()
@@ -405,9 +404,9 @@ class ProgLabelTextWidget(BaseTextWidget):
             if letter == '°': return
             char = ord(letter)
             if char < 126:
-                new_char = QtCore.QString.fromUtf8(chr(char+1))
+                new_char = chr(char+1)
             else:
-                new_char = QtCore.QString.fromUtf8('°')
+                new_char = '°'
             self.editing_text = self.editing_text[:self.cursor_pos] + new_char + self.editing_text[self.cursor_pos+1:]
             self.set_cursor_pos(self.cursor_pos)
         elif event.key() == QtCore.Qt.Key_Down:
@@ -456,7 +455,7 @@ class ProgLabelTextWidget(BaseTextWidget):
             self.editing = False
             self.update()
             return
-        new_text = QtCore.QString.fromUtf8('Save sound name to "{}"?'.format(self.editing_text.toUtf8()))
+        new_text = 'Save sound name to "{}"?'.format(self.editing_text.toUtf8())
         res = QtGui.QMessageBox.question(self.main.scene().views()[0].window(), 'Save sound name?', new_text, QtGui.QMessageBox.Yes|QtGui.QMessageBox.No|QtGui.QMessageBox.Cancel)
         if res == QtGui.QMessageBox.Cancel:
             self.ungrabKeyboard()
@@ -522,7 +521,7 @@ class ProgLabelTextWidget(BaseTextWidget):
         self.grabKeyboard()
         self.cursor.show()
         self.cursor_timer.start()
-        self.editing_text = QtCore.QString.fromUtf8(str(self.text.toUtf8()))
+        self.editing_text = str(self.text.toUtf8())
         self.editing = True
         self.set_cursor_pos(0)
 
@@ -640,7 +639,7 @@ class DisplayComboLabelClass(BaseTextWidget):
         self.text_align = QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter
         self.font = QtGui.QFont('Fira Sans', 9)
         self.font_metrics = QtGui.QFontMetrics(self.font)
-        self.setMinimumSize(max([self.font_metrics.width(txt) for txt in self.value_list if isinstance(txt, QtCore.QString)]), self.font_metrics.height())
+        self.setMinimumSize(max([self.font_metrics.width(txt) for txt in self.value_list if isinstance(txt, string)]), self.font_metrics.height())
 #        self.setMaximumSize(self.minimumSize())
 #        if fixed:
 #            self.setMaximumWidth(self.font_metrics.width(self.text) if max_size is None else max_size)
@@ -656,7 +655,7 @@ class DisplayComboLabelClass(BaseTextWidget):
         painter.setPen(self.pen)
         painter.setBrush(self.brush)
         item = self.value_list[self.currentIndex]
-        if isinstance(item, QtCore.QString):
+        if isinstance(item, string):
             painter.setFont(self.font)
             painter.drawText(self.rect(), self.text_align, item)
         else:
@@ -673,7 +672,6 @@ class StepTypeComboLabel(DisplayComboLabelClass):
                   '▼', 
                   '▲', 
                   ]
-    value_list = list(map(QtCore.QString.fromUtf8, value_list))
     firstlast = QtGui.QPainterPath()
     firstlast.moveTo(4, 0)
     firstlast.lineTo(8, 4)
@@ -690,22 +688,19 @@ class StepTypeComboLabel(DisplayComboLabelClass):
     chord.addEllipse(0, 4, 4, 2)
     chord.addEllipse(0, 7, 4, 2)
     value_list.append(chord)
-    value_list.append(QtCore.QString.fromUtf8('?'))
+    value_list.append('?')
 
 
 class AccentComboLabel(DisplayComboLabelClass):
     value_list = ['sil.', '/4', '/3', '/2', '*1', '*2', '*3', '*4', ]
-    value_list = list(map(QtCore.QString.fromUtf8, value_list))
 
 
 class TimingComboLabel(DisplayComboLabelClass):
     value_list = ['rnd', '-3', '-2', '-1', '+0', '+1', '+2', '+3', ]
-    value_list = list(map(QtCore.QString.fromUtf8, value_list))
 
 
 class LengthComboLabel(DisplayComboLabelClass):
     value_list = ['leg.', '-3', '-2', '-1', '+0', '+1', '+2', '+3', ]
-    value_list = list(map(QtCore.QString.fromUtf8, value_list))
 
 
 class DisplayButton(QtGui.QGraphicsWidget):
@@ -2180,7 +2175,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         self.statusUpdate('{} changed: {}'.format(param.name, value))
 
     def statusUpdate(self, text):
-        self.status.text = QtCore.QString.fromUtf8(text)
+        self.status.text = text
         self.update()
         self.panel.update()
 
@@ -2721,7 +2716,6 @@ class Editor(QtGui.QMainWindow):
                         '●○○●|○○●○|○●○○|●○○●', 
                         '●○●○|●○●○|●○○●|●○●○', 
                         ]
-        arp_patterns = [QtCore.QString().fromUtf8(p) for p in arp_patterns]
         pattern = BlofeldCombo(self, self.params.Arpeggiator_Pattern, values=arp_patterns, name='')
         pattern_layout.addWidget(pattern)
 
