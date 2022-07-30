@@ -213,7 +213,7 @@ class ParamsClass(object):
     with open(local_path('blofeld_params'), 'rb') as bp:
         param_list = []
         param_names = {}
-        for i, (r, v, n, s, f, a) in enumerate(pickle.load(bp)):
+        for i, (r, v, n, s, f, a) in enumerate(pickle.load(bp, encoding='latin1')):
             if i == 58:
                 v = AdvParam('0uuu000a', u=('Unisono', ['off', 'dual', '3', '4', '5', '6']), a=('Allocation', ['Poly','Mono']))
             elif i in [196, 208, 220, 232]:
