@@ -1,7 +1,7 @@
 import sys
 from time import sleep
 
-from PyQt4 import QtCore
+from PyQt5 import QtCore
 import rtmidi
 
 #from const import *

@@ -31,7 +31,7 @@ Linux requirements
 ------------------
 
 -  Python 2.7
--  PyQt4 >= 4.11.1 with QtMultimedia support (not mandatory, required for audio previews in the Wavetable editor)
+-  PyQt5 >= 4.11.1 with QtMultimedia support (not mandatory, required for audio previews in the Wavetable editor)
 -  pyalsa
 
 Windows requirements

@@ -4,8 +4,7 @@
 import sys
 from math import pi, sin, cos, acos, hypot, radians, degrees
 from bisect import bisect_left
-from PyQt4 import QtGui
-from PyQt4 import QtCore
+from PyQt5 import QtGui, QtCore, QtWidgets
 
 from .midiutils import NoteIds, NoteNames
 from .utils import getAlignMask
@@ -19,18 +18,18 @@ LEFT = QtCore.Qt.LeftSection
 RIGHT = QtCore.Qt.RightSection
 FROM, TO, EXT, INT = list(range(4))
 
-class Key(QtGui.QGraphicsWidget):
+class Key(QtWidgets.QGraphicsWidget):
     def __init__(self, parent):
-        QtGui.QGraphicsWidget.__init__(self, parent)
+        QtWidgets.QGraphicsWidget.__init__(self, parent)
 
     def paint(self, painter, *args, **kwargs):
         painter.drawRect(0, 0, 40, 40)
 
-class KeyItem(QtGui.QGraphicsItem):
+class KeyItem(QtWidgets.QGraphicsItem):
     noteEvent = QtCore.pyqtSignal(int, int)
     key_name_font = QtGui.QFont()
     def __init__(self, note, text=False):
-        QtGui.QGraphicsItem.__init__(self, parent=None)
+        QtWidgets.QGraphicsItem.__init__(self, parent=None)
         self.note = note
         self.note_name = NoteNames[note]
         self.note_short = self.note_name[0].upper()
@@ -53,7 +52,7 @@ class KeyItem(QtGui.QGraphicsItem):
     def mouseMoveEvent(self, event):
         if not self.boundingRect().contains(event.pos()):
             item = self.scene().itemAt(self.mapToScene(event.pos()))
-            if isinstance(item, QtGui.QGraphicsItem):
+            if isinstance(item, QtWidgets.QGraphicsItem):
                 if item != self.current:
                     try:
                         self.current.release()
@@ -151,15 +150,15 @@ class BlackKey(KeyItem):
         self.paint = self.paint_black
         self.key_color = self.key_color_up
 
-class Piano(QtGui.QGraphicsView):
+class Piano(QtWidgets.QGraphicsView):
     noteEvent = QtCore.pyqtSignal(int, int)
     def __init__(self, parent=None, lower='c2', higher='c7', key_list=None, key_list_start=12):
-        QtGui.QGraphicsView.__init__(self, parent)
-        self.scene = QtGui.QGraphicsScene(self)
+        QtWidgets.QGraphicsView.__init__(self, parent)
+        self.scene = QtWidgets.QGraphicsScene(self)
         self.main = parent
         self.keys = {}
         self.setFrameStyle(0)
-        self.scene = QtGui.QGraphicsScene(self)
+        self.scene = QtWidgets.QGraphicsScene(self)
         self.setScene(self.scene)
         self.draw_keyboard(lower, higher, key_list, key_list_start)
 
@@ -196,7 +195,7 @@ class Piano(QtGui.QGraphicsView):
     def resizeEvent(self, event):
         self.fitInView(0, 0, self.key_range*20, 100, QtCore.Qt.IgnoreAspectRatio)
 
-class Label(QtGui.QWidget):
+class Label(QtWidgets.QWidget):
     _pen_enabled = QtGui.QPen(QtCore.Qt.white)
     _pen_disabled = QtGui.QPen(QtCore.Qt.darkGray)
     _pen_colors = _pen_disabled, _pen_enabled
@@ -207,7 +206,7 @@ class Label(QtGui.QWidget):
 #    label_pos = RIGHT
     base_translate = QtCore.QPointF(0, 0)
     def __init__(self, parent=None, text='', text_align=QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter, label_pos=RIGHT, path=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.text = text
         self.text_align = text_align
         self.font = QtGui.QFont('Droid Sans', 9, QtGui.QFont.Bold)
@@ -216,7 +215,7 @@ class Label(QtGui.QWidget):
         text_height = self.font_metrics.height()*len(text_split)
         text_width = max([self.font_metrics.width(t) for t in text_split])
         self.label_rect = QtCore.QRectF(0, 0, text_width, text_height)
-#        self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Preferred)
+#        self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Preferred)
         if path:
             self.path = path
             self.path_rect = self.path.boundingRect()
@@ -296,26 +295,26 @@ class ActionLabel(Label):
     def addActions(self, *actions):
         if len(actions) > 1:
             self.actions.extend(actions)
-        elif isinstance(actions[0], QtGui.QAction):
+        elif isinstance(actions[0], QtWidgets.QAction):
             self.actions.append(actions[0])
         else:
             self.actions.extend(actions[0])
 
     def mousePressEvent(self, event):
-        menu = QtGui.QMenu()
+        menu = QtWidgets.QMenu()
         for action in self.actions:
             menu.addAction(action)
         menu.exec_(self.mapToGlobal(QtCore.QPoint(0, self.height())))
 
     def contextMenuEvent(self, event):
-        menu = QtGui.QMenu()
+        menu = QtWidgets.QMenu()
         for action in self.actions:
             menu.addAction(action)
         menu.exec_(event.globalPos())
 
-class Section(QtGui.QWidget):
+class Section(QtWidgets.QWidget):
     def __init__(self, parent=None, color=None, alpha=None, width=0, height=0, border=False, border_color=None, label='', label_pos=TOP):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         if color is None:
             self.brush = QtGui.QColor(30, 35, 35, 200 if alpha is None else alpha)
         else:
@@ -331,7 +330,7 @@ class Section(QtGui.QWidget):
             self.pen = QtGui.QPen(QtGui.QColor(*border_color))
         if label:
             self.label = Label(self, label)
-            self.label.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+            self.label.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
             self.label.move(0, 0)
         else:
             self.label = None
@@ -369,7 +368,7 @@ class Section(QtGui.QWidget):
             height = self.height()-1
         self.rect = QtCore.QRectF(x, y, width, height)
 
-class Routing(QtGui.QWidget):
+class Routing(QtWidgets.QWidget):
     base_size = 12
     base_rect = QtCore.QRect(-4, -4, 4, 4)
     top_triangle = QtGui.QPainterPath(QtCore.QPoint(0, -4))
@@ -394,7 +393,7 @@ class Routing(QtGui.QWidget):
     right_triangle.closeSubpath()
 
     def __init__(self, parent=None, start=BOTTOM, end=BOTTOM, direction=FROM, orientation=HORIZONTAL, padding=4):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.direction = direction
         self.orientation = orientation
         self.invert = False
@@ -405,7 +404,7 @@ class Routing(QtGui.QWidget):
             self.horizontal_padding, self.vertical_padding = padding
         self.conn_end = QtCore.QPoint(0, 0)
         if orientation == HORIZONTAL:
-            self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Fixed)
+            self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Fixed)
             if start == BOTTOM and end in [TOP, RIGHT]:
                 start = end
                 end = BOTTOM
@@ -569,10 +568,10 @@ class Routing(QtGui.QWidget):
 
 
 
-class OSpacer(QtGui.QWidget):
+class OSpacer(QtWidgets.QWidget):
     def __init__(self, parent=None, min_size=2, min_width=None, min_height=None, max_size=None, max_width=None, max_height=None):
-        QtGui.QWidget.__init__(self, parent)
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        QtWidgets.QWidget.__init__(self, parent)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
         if not any((min_width, min_height)):
             if isinstance(min_size, tuple):
                 self.setMinimumSize(*min_size)
@@ -599,16 +598,16 @@ class OSpacer(QtGui.QWidget):
 class HSpacer(OSpacer):
     def __init__(self, parent=None, min_width=None, max_width=None):
         OSpacer.__init__(self, parent, min_width, max_width, max_height=0)
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding if max_width is None else QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding if max_width is None else QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
         self.setMinimumHeight(0)
 
 class VSpacer(OSpacer):
     def __init__(self, parent=None, min_height=None, max_height=None):
         OSpacer.__init__(self, parent, min_height, max_height, max_width=0)
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.MinimumExpanding)
         self.setMinimumWidth(0)
 
-class Slider(QtGui.QAbstractSlider):
+class Slider(QtWidgets.QAbstractSlider):
     border_grad = QtGui.QConicalGradient(QtCore.QPointF(.5, .5), 45)
     border_grad.setCoordinateMode(QtGui.QConicalGradient.ObjectBoundingMode)
     _top = QtGui.QColor(30, 30, 30)
@@ -655,7 +654,7 @@ class Slider(QtGui.QAbstractSlider):
     slider_border = QtGui.QPen(slider_border, 1)
 
     def __init__(self, parent, orientation=VERTICAL, inverted=True, min_value=0, max_value=127, step=1, value=None, default=None, name='', label_pos=BOTTOM, center=False, show_bar=True, scale=False, gradient=False, size=None, min_size=None, max_size=None):
-        QtGui.QAbstractSlider.__init__(self, parent)
+        QtWidgets.QAbstractSlider.__init__(self, parent)
         self.label_font = QtGui.QFont('Droid Sans', 9, QtGui.QFont.Bold)
         self.label_font_metrics = QtGui.QFontMetrics(self.label_font)
         self.setRange(min_value, max_value)
@@ -686,7 +685,7 @@ class Slider(QtGui.QAbstractSlider):
         if orientation == VERTICAL:
             min_width = 20
             min_height = 24
-            self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Expanding)
+            self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Expanding)
             self.slider_rect = QtCore.QRectF(0, 0, 16, 4)
             self.resizeEvent = self.resizeEventVertical
             self.mouseMoveEvent = self.mouseMoveEventVertical
@@ -694,7 +693,7 @@ class Slider(QtGui.QAbstractSlider):
         else:
             min_width = 24
             min_height = 20
-            self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.MinimumExpanding)
+            self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.MinimumExpanding)
             self.slider_rect = QtCore.QRectF(0, 0, 4, 16)
             self.resizeEvent = self.resizeEventHorizontal
             self.mouseMoveEvent = self.mouseMoveEventHorizontal
@@ -729,7 +728,7 @@ class Slider(QtGui.QAbstractSlider):
                 self.cursor_mode = False
                 self.current_delta = None
                 return True
-        return QtGui.QAbstractSlider.eventFilter(self, source, event)
+        return QtWidgets.QAbstractSlider.eventFilter(self, source, event)
 
     def mousePressEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton:
@@ -896,7 +895,7 @@ class Slider(QtGui.QAbstractSlider):
         self.cursor.move(pos.x(), pos.y())
 
 
-class SquareButton(QtGui.QAbstractButton):
+class SquareButton(QtWidgets.QAbstractButton):
     @staticmethod
     def get_btn_colors(color):
         if isinstance(color, QtGui.QColor):
@@ -968,11 +967,11 @@ class SquareButton(QtGui.QAbstractButton):
     label_pos = BOTTOM
 
     def __init__(self, parent=None, name='', inverted=False, color=color, checkable=False, checked=False, size=None, min_size=None, text_align=None, label_pos=label_pos):
-        QtGui.QAbstractButton.__init__(self, parent=parent)
+        QtWidgets.QAbstractButton.__init__(self, parent=parent)
         self.label_font = QtGui.QFont('Droid Sans', 9, QtGui.QFont.Bold)
         self.label_font_metrics = QtGui.QFontMetrics(self.label_font)
         self.setMinimumSize(self.base_width, self.base_height)
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
         self.toggled.connect(self.toggle_states)
         self.active_border, self.active_grad, self.active_pressed_border, self.active_pressed_grad = self.get_btn_colors(color)
@@ -1064,7 +1063,7 @@ class SquareButton(QtGui.QAbstractButton):
 #            max_width = max((w, self.label_rect.width()))
 #            self.setMinimumSize(max_width, h+self.spacing+self.label_rect.height())
 #            self.button_rect = QtCore.QRectF((max_width-max_width)/2., 0, w, h)
-#            self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+#            self.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
 #        elif max_size:
 #            if isinstance(max_size, tuple):
 #                w, h = max_size
@@ -1074,7 +1073,7 @@ class SquareButton(QtGui.QAbstractButton):
 #            self.setMinimumSize(max_width, h+self.spacing+self.label_rect.height())
 #            self.setMaximumSize(max_width, h+self.spacing+self.label_rect.height())
 #            self.button_rect = QtCore.QRectF((max_width-w)/2., 0, w, h)
-##            self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Fixed)
+##            self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Fixed)
 #        else:
 #            max_width = max((self.base_width, self.label_rect.width()))
 #            self.setMinimumSize(max_width, self.base_height+self.spacing+self.label_rect.height())
@@ -1083,7 +1082,7 @@ class SquareButton(QtGui.QAbstractButton):
 #    def setChecked(self, state):
 #        if self.inverted:
 #            state = not state
-#        QtGui.QAbstractButton.setChecked(self,state)
+#        QtWidgets.QAbstractButton.setChecked(self,state)
 
     def setText(self, text):
         self.name = text
@@ -1091,7 +1090,7 @@ class SquareButton(QtGui.QAbstractButton):
 
     def changeEvent(self, event):
         if not event.type() == QtCore.QEvent.EnabledChange: return
-#        QtGui.QAbstractButton.changeEvent(self, event)
+#        QtWidgets.QAbstractButton.changeEvent(self, event)
         state = self.isEnabled()
         if not state:
             self.current_color = self.unactive_color
@@ -1124,7 +1123,7 @@ class SquareButton(QtGui.QAbstractButton):
         if not event.button() == QtCore.Qt.LeftButton: return
         self.set_pressed_colors()
         self.repaint()
-        QtGui.QAbstractButton.mousePressEvent(self, event)
+        QtWidgets.QAbstractButton.mousePressEvent(self, event)
 
     def set_released_colors(self):
         if not self.isEnabled():
@@ -1141,7 +1140,7 @@ class SquareButton(QtGui.QAbstractButton):
     def mouseReleaseEvent(self, event):
         self.set_released_colors()
         self.repaint()
-        QtGui.QAbstractButton.mouseReleaseEvent(self, event)
+        QtWidgets.QAbstractButton.mouseReleaseEvent(self, event)
 
     def mouseMoveEvent(self, event):
         pressed = self.hitButton(event.pos())
@@ -1193,7 +1192,7 @@ class SquareButton(QtGui.QAbstractButton):
 #            self.current_color = self.active_color
 #            self.current_pen = self.active_pen
 
-class Frame(QtGui.QWidget):
+class Frame(QtWidgets.QWidget):
     _fgd_line_normal = QtGui.QColor(QtCore.Qt.black)
     _fgd_line_highlight = QtGui.QColor(QtCore.Qt.gray)
     fgd_lines = _fgd_line_normal, _fgd_line_highlight
@@ -1214,11 +1213,11 @@ class Frame(QtGui.QWidget):
     border_grad.setColorAt(1, _up)
     border_pen = QtGui.QPen(border_grad, 1)
     def __init__(self, parent, title='', padding=1, ratio=1., ani_range=5):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.font = QtGui.QFont('Droid Sans', 14, QtGui.QFont.Bold)
         self.font_metrics = QtGui.QFontMetrics(self.font)
         self.setFocusPolicy(QtCore.Qt.ClickFocus)
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
         self.padding = padding
         if title:
             self.title = title
@@ -1290,11 +1289,11 @@ class Frame(QtGui.QWidget):
     def resizeEvent(self, event):
         self.fgd_rect = QtCore.QRectF(1, 1, self.width()-self.padding*2-1, self.height()-self.padding*2-1)
 
-class EnvelopeObject(QtGui.QWidget):
+class EnvelopeObject(QtWidgets.QWidget):
     def __init__(self, parent, name='', cursor=QtCore.Qt.SizeAllCursor, *args, **kwargs):
         self.name = name
         self.cursor = QtGui.QCursor(cursor)
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
 
 class EnvelopePoint(EnvelopeObject):
     def __init__(self, parent=None, *args):
@@ -1326,10 +1325,10 @@ class EnvelopePoint(EnvelopeObject):
         qp.end()
 
     def move(self, x, y):
-        QtGui.QWidget.move(self, x-4, y-4)
+        QtWidgets.QWidget.move(self, x-4, y-4)
 
     def moveAbs(self, x, y):
-        QtGui.QWidget.move(self, x, y)
+        QtWidgets.QWidget.move(self, x, y)
 
 
 class EnvelopeLine(EnvelopeObject):
@@ -1359,13 +1358,13 @@ class EnvelopeLine(EnvelopeObject):
         qp.end()
 
     def move(self, x, y):
-        QtGui.QWidget.move(self, x, y-6)
+        QtWidgets.QWidget.move(self, x, y-6)
 #
 #    def moveAbs(self, x, y):
-#        QtGui.QWidget.move(self, x, y)
+#        QtWidgets.QWidget.move(self, x, y)
 
 
-class Envelope(QtGui.QWidget):
+class Envelope(QtWidgets.QWidget):
     border_grad = QtGui.QConicalGradient(QtCore.QPointF(.5, .5), 45)
     border_grad.setCoordinateMode(QtGui.QConicalGradient.ObjectBoundingMode)
     _up = QtGui.QColor(180, 180, 180)
@@ -1403,8 +1402,8 @@ class Envelope(QtGui.QWidget):
     releaseChanged = QtCore.pyqtSignal(int)
     envelopeChanged = QtCore.pyqtSignal(int)
     def __init__(self, parent, mode=ADSR, show_points=True):
-        QtGui.QWidget.__init__(self, parent)
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
+        QtWidgets.QWidget.__init__(self, parent)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
         self.mode = mode
         self.show_points = show_points
         self.setContentsMargins(2, 2, 2, 2)
@@ -1713,25 +1712,25 @@ class Envelope(QtGui.QWidget):
                 self.current_cursor = self.current_delta = self.hover_point = None
                 source.setToolTip('\n'.join(['{}: {}'.format(var.capitalize().replace('_', ' '), getattr(self, var)) for var in self.cursor_labels[source]]))
                 source.event(QtGui.QHelpEvent(QtCore.QEvent.ToolTip, QtCore.QPoint(20, 20), self.mapToGlobal(source.pos())+QtCore.QPoint(20, 0)))
-                QtGui.QApplication.changeOverrideCursor(source.cursor)
+                QtWidgets.QApplication.changeOverrideCursor(source.cursor)
                 self.repaint()
                 return True
             elif event.type() == QtCore.QEvent.Enter:
                 self.hover_point = source
                 source.setToolTip('\n'.join(['{}: {}'.format(var.capitalize().replace('_', ' '), getattr(self, var)) for var in self.cursor_labels[source]]))
                 source.event(QtGui.QHelpEvent(QtCore.QEvent.ToolTip, QtCore.QPoint(20, 20), self.mapToGlobal(source.pos())+QtCore.QPoint(20, 0)))
-                QtGui.QApplication.setOverrideCursor(source.cursor)
+                QtWidgets.QApplication.setOverrideCursor(source.cursor)
             elif event.type() == QtCore.QEvent.Leave:
-                QtGui.QApplication.restoreOverrideCursor()
+                QtWidgets.QApplication.restoreOverrideCursor()
 #                self.repaint()
-        return QtGui.QWidget.eventFilter(self, source, event)
+        return QtWidgets.QWidget.eventFilter(self, source, event)
 
     def mouseMoveEvent(self, event):
         if not self.current_cursor: return
         self.cursors[self.current_cursor](event.pos())
         self.current_cursor.setToolTip('\n'.join(['{}: {}'.format(var.capitalize().replace('_', ' '), getattr(self, var)) for var in self.cursor_labels[self.current_cursor]]))
         self.current_cursor.event(QtGui.QHelpEvent(QtCore.QEvent.ToolTip, QtCore.QPoint(0, 0), self.mapToGlobal(self.current_cursor.pos())+QtCore.QPoint(20, 0)))
-        QtGui.QApplication.changeOverrideCursor(QtGui.QCursor(QtCore.Qt.BlankCursor))
+        QtWidgets.QApplication.changeOverrideCursor(QtGui.QCursor(QtCore.Qt.BlankCursor))
 
     def coord_attack(self, pos):
         x = pos.x()-self.current_delta.x()
@@ -1957,12 +1956,12 @@ class Envelope(QtGui.QWidget):
 #        [x() for x in s]
 
 
-class ListView(QtGui.QListView):
+class ListView(QtWidgets.QListView):
     indexChanged = QtCore.pyqtSignal(int)
     def __init__(self, parent, item_list=None):
-        QtGui.QListView.__init__(self, parent)
+        QtWidgets.QListView.__init__(self, parent)
         self.main = parent
-        self.setEditTriggers(QtGui.QListView.NoEditTriggers)
+        self.setEditTriggers(QtWidgets.QListView.NoEditTriggers)
         self.setMouseTracking(True)
         if sys.platform == 'win32':
             self.setWindowFlags(QtCore.Qt.FramelessWindowHint|QtCore.Qt.Tool)
@@ -1975,13 +1974,13 @@ class ListView(QtGui.QListView):
         self.adjust_size()
         self.clicked.connect(self.selected)
         self.activated.connect(self.selected)
-        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Preferred)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Preferred)
 
     def showEvent(self, event):
         max_width = self.width()-self.viewport().width()+max([self.sizeHintForColumn(0)])
         min_width = self.main.width()
         self.setMaximumWidth(max_width if max_width > min_width else min_width)
-        desktop = QtGui.QApplication.desktop().availableGeometry(self)
+        desktop = QtWidgets.QApplication.desktop().availableGeometry(self)
         geo = self.geometry()
         if not desktop.contains(geo, True):
             if geo.x() < desktop.x():
@@ -2041,7 +2040,7 @@ class ListView(QtGui.QListView):
         self.setMask(bmp)
 
 
-class Combo(QtGui.QComboBox):
+class Combo(QtWidgets.QComboBox):
     _enabled_border_grad = QtGui.QConicalGradient(QtCore.QPointF(.5, .5), 45)
     _enabled_border_grad.setCoordinateMode(QtGui.QConicalGradient.ObjectBoundingMode)
     _enabled_border_grad.setColorAt(0, QtCore.Qt.darkGray)
@@ -2086,7 +2085,7 @@ class Combo(QtGui.QComboBox):
     label_pen = _label_pen_colors[1]
     indexChanged = QtCore.pyqtSignal(int)
     def __init__(self, parent=None, value_list=None, name='', wheel_dir=True, default=0):
-        QtGui.QComboBox.__init__(self, parent)
+        QtWidgets.QComboBox.__init__(self, parent)
         self.combo_padding = 2
         self.spacing = 4
         self.setFont(QtGui.QFont('Droid Sans', 10, QtGui.QFont.Bold))
@@ -2104,7 +2103,7 @@ class Combo(QtGui.QComboBox):
             self.name = None
             self.setMinimumSize(10, self.font_metrics.height()+self.combo_padding*2)
             self.setMaximumHeight(self.font_metrics.height()+self.combo_padding*2)
-#        self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Fixed)
+#        self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         self.value_list = []
         self.wheel_dir = 1 if wheel_dir else -1
         if value_list:
@@ -2145,7 +2144,7 @@ class Combo(QtGui.QComboBox):
 #    def event(self, event):
 #        if event.type() == QtCore.QEvent.ToolTip and self.combo_rect.contains(event.pos()):
 #            QtGui.QToolTip.showText(event.globalPos(), self.current, self, self.combo_rect)
-#        return QtGui.QWidget.event(self, event)
+#        return QtWidgets.QWidget.event(self, event)
 
     def _setValue(self, id):
         self.blockSignals(True)
@@ -2160,7 +2159,7 @@ class Combo(QtGui.QComboBox):
 #        self._setValue(id)
 #        self.indexChanged.emit(id)
 #        self.update()
-#        QtGui.QComboBox.setCurrentIndex(self, id)
+#        QtWidgets.QComboBox.setCurrentIndex(self, id)
 
     def paintEvent(self, e):
         qp = QtGui.QPainter()
@@ -2244,9 +2243,9 @@ class Combo(QtGui.QComboBox):
         
 
 
-class GhostCursor(QtGui.QWidget):
+class GhostCursor(QtWidgets.QWidget):
     def __init__(self, parent, width, height=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.setMinimumSize(2, 2)
         if width < self.minimumWidth():
             width = self.minimumWidth()
@@ -2266,10 +2265,10 @@ class GhostCursor(QtGui.QWidget):
 #
     def move(self, x, y):
 #        print x, y
-        QtGui.QWidget.move(self, x-self.width()/2, y-self.height()/2)
+        QtWidgets.QWidget.move(self, x-self.width()/2, y-self.height()/2)
 
 
-class Cursor(QtGui.QWidget):
+class Cursor(QtWidgets.QWidget):
     _fill_grad_disabled = QtGui.QRadialGradient(5, 5, 5)
     _fill_grad_disabled.setColorAt(0, QtGui.QColor(115, 115, 115))
     _fill_grad_disabled.setColorAt(1, QtGui.QColor(90, 90, 90))
@@ -2290,7 +2289,7 @@ class Cursor(QtGui.QWidget):
     border_grad = _border_grad_colors[1]
 
     def __init__(self, parent, size):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.setMinimumSize(2, 2)
         if size < self.minimumWidth():
             size = self.minimumWidth()
@@ -2301,7 +2300,7 @@ class Cursor(QtGui.QWidget):
     def setEnabled(self, state):
         self.fill_grad = self._fill_grad_colors[state]
         self.border_grad = self._border_grad_colors[state]
-        QtGui.QWidget.setEnabled(self, state)
+        QtWidgets.QWidget.setEnabled(self, state)
 
     def paintEvent(self, e):
         qp = QtGui.QPainter()
@@ -2313,7 +2312,7 @@ class Cursor(QtGui.QWidget):
         qp.end()
 
     def move(self, x, y):
-        QtGui.QWidget.move(self, x-self.width()/2, y-self.width()/2)
+        QtWidgets.QWidget.move(self, x-self.width()/2, y-self.width()/2)
 
     def resizeEvent(self, event):
         for s in range(2):
@@ -2325,7 +2324,7 @@ class Cursor(QtGui.QWidget):
             self._border_grad_colors[s].setFocalPoint(self.width(), self.width())
 
 
-class Dial(QtGui.QWidget):
+class Dial(QtWidgets.QWidget):
     _start_color_disabled = QtGui.QColor(0, 128, 0)
     _start_color_enabled = QtGui.QColor(QtCore.Qt.green)
     _start_colors = [_start_color_disabled, _start_color_enabled]
@@ -2388,7 +2387,7 @@ class Dial(QtGui.QWidget):
     valueChanged = QtCore.pyqtSignal(int)
 
     def __init__(self, parent, full_range=None, min_value=0, max_value=127, step=1, value=None, default=None, name='', center=False, show_bar=True, value_list=None, scale=True, gradient=False, size=None, min_size=None, max_size=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.setMouseTracking(True)
         self.value_font = QtGui.QFont('Droid Sans', 10, QtGui.QFont.Bold)
         self.value_font_metrics = QtGui.QFontMetrics(self.value_font)
@@ -2397,7 +2396,7 @@ class Dial(QtGui.QWidget):
         self.setMinimumSize(QtGui.QFontMetrics(self.label_font).width(name), 46)
         self.setFocusPolicy(QtCore.Qt.WheelFocus)
         self._size = QtCore.QSize(40, 40)
-        sp = QtGui.QSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
+        sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
 #        sp.setHeightForWidth(True)
         self.setSizePolicy(sp)
 
@@ -2475,7 +2474,7 @@ class Dial(QtGui.QWidget):
         return self.value_list[(self.value-self.min_value)/self.step]
 
 #    def setEnabled(self, state):
-#        QtGui.QWidget.setEnabled(self, state)
+#        QtWidgets.QWidget.setEnabled(self, state)
 
     def changeEvent(self, event):
         if not event.type() == QtCore.QEvent.EnabledChange: return
@@ -2694,7 +2693,7 @@ class Dial(QtGui.QWidget):
                 self.cursor_mode = False
         if event.type() == QtCore.QEvent.ToolTip and QtCore.QRect(*self.translate+(self.dial_size, )*2).contains(event.pos()):
             QtGui.QToolTip.showText(event.globalPos(), self.text_value, self, self.dial_rect.toRect())
-        return QtGui.QWidget.eventFilter(self, source, event)
+        return QtWidgets.QWidget.eventFilter(self, source, event)
 
     def wheelEvent(self, event):
         if event.modifiers() == QtCore.Qt.ShiftModifier:

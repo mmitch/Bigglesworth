@@ -6,7 +6,7 @@ import pickle
 from string import ascii_uppercase
 from itertools import cycle
 from random import randrange
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 from .midiutils import *
 
@@ -160,7 +160,7 @@ class BlofeldCombo(Combo):
 class BlofeldEnv(Envelope):
     def __init__(self, parent, env_name, *args, **kwargs):
         Envelope.__init__(self, parent, *args, **kwargs)
-        self.anim = QtCore.QPropertyAnimation(self, 'geometry')
+        self.anim = QtCore.QPropertyAnimation(self, b'geometry')
         self.anim.setDuration(50)
         self.anim.finished.connect(self.checkAnimation)
         self.normal = True
@@ -194,7 +194,7 @@ class BlofeldEnv(Envelope):
             self.activateWindow()
             self.normal = False
             self.setShowPoints(True)
-            desktop = QtGui.QApplication.desktop().availableGeometry(self)
+            desktop = QtWidgets.QApplication.desktop().availableGeometry(self)
             geo = QtCore.QRect(self.x(), self.y(), 240, 120)
             if not desktop.contains(geo, True):
                 if geo.x() < desktop.x():
@@ -249,7 +249,7 @@ class BlofeldEnv(Envelope):
 #            self.normalize()
 
 
-class BaseDisplayWidget(QtGui.QGraphicsWidget):
+class BaseDisplayWidget(QtWidgets.QGraphicsWidget):
     pen = brush = QtGui.QColor(30, 50, 40)
 
 
@@ -265,7 +265,7 @@ class DownArrowWidget(BaseDisplayWidget):
         height = self.arrow.boundingRect().height()+padding
         self.setMinimumSize(width, height)
         self.setMaximumSize(width, height)
-        self.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Minimum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Minimum)
 
     def paint(self, painter, *args, **kwargs):
         painter.setPen(self.pen)
@@ -345,10 +345,10 @@ class ProgLabelTextWidget(BaseTextWidget):
         self.font = QtGui.QFont('Fira Sans', 22)
         self.font_metrics = QtGui.QFontMetrics(self.font)
         self.setMinimumSize(self.font_metrics.width(self.text), self.font_metrics.height())
-        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
         while len(self.text) < 16:
             self.text += ' '
-        self.text_list = QtCore.QStringList([l for l in self.text])
+        self.text_list = [l for l in self.text]
         self.cursor = TextCursorWidget(self, self.font_metrics.ascent())
         self.cursor.hide()
         self.cursor_timer = QtCore.QTimer()
@@ -456,8 +456,8 @@ class ProgLabelTextWidget(BaseTextWidget):
             self.update()
             return
         new_text = 'Save sound name to "{}"?'.format(self.editing_text.toUtf8())
-        res = QtGui.QMessageBox.question(self.main.scene().views()[0].window(), 'Save sound name?', new_text, QtGui.QMessageBox.Yes|QtGui.QMessageBox.No|QtGui.QMessageBox.Cancel)
-        if res == QtGui.QMessageBox.Cancel:
+        res = QtWidgets.QMessageBox.question(self.main.scene().views()[0].window(), 'Save sound name?', new_text, QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.No|QtWidgets.QMessageBox.Cancel)
+        if res == QtWidgets.QMessageBox.Cancel:
             self.ungrabKeyboard()
             self.grabKeyboard()
             self.setFocus(QtCore.Qt.OtherFocusReason)
@@ -467,7 +467,7 @@ class ProgLabelTextWidget(BaseTextWidget):
         self.cursor_timer.stop()
         self.cursor.hide()
         self.editing = False
-        if res == QtGui.QMessageBox.Yes:
+        if res == QtWidgets.QMessageBox.Yes:
             if self.text != self.editing_text:
                 self.check_changes()
         self.update()
@@ -580,9 +580,9 @@ class CatTextWidget(SmallTextWidget):
         self.update()
 
 
-class DisplayVSpacer(QtGui.QGraphicsWidget):
+class DisplayVSpacer(QtWidgets.QGraphicsWidget):
     def __init__(self, parent, size=2):
-        QtGui.QGraphicsWidget.__init__(self, parent)
+        QtWidgets.QGraphicsWidget.__init__(self, parent)
         self.setMinimumHeight(size)
         self.setMaximumSize(0, size)
 
@@ -590,9 +590,9 @@ class DisplayVSpacer(QtGui.QGraphicsWidget):
 #        painter.drawRect(self.rect())
 
 
-class DisplayHSpacer(QtGui.QGraphicsWidget):
+class DisplayHSpacer(QtWidgets.QGraphicsWidget):
     def __init__(self, parent, size=2):
-        QtGui.QGraphicsWidget.__init__(self, parent)
+        QtWidgets.QGraphicsWidget.__init__(self, parent)
         self.setMinimumWidth(size)
         self.setMaximumSize(size, 0)
 
@@ -703,7 +703,7 @@ class LengthComboLabel(DisplayComboLabelClass):
     value_list = ['leg.', '-3', '-2', '-1', '+0', '+1', '+2', '+3', ]
 
 
-class DisplayButton(QtGui.QGraphicsWidget):
+class DisplayButton(QtWidgets.QGraphicsWidget):
     on_pen = on_brush = QtGui.QColor(30, 50, 40)
     off_pen = QtGui.QColor(160, 180, 170)
     off_brush = QtGui.QColor(QtCore.Qt.transparent)
@@ -722,7 +722,7 @@ class DisplayButton(QtGui.QGraphicsWidget):
     clicked = QtCore.pyqtSignal()
 
     def __init__(self, parent, state=False):
-        QtGui.QGraphicsWidget.__init__(self, parent)
+        QtWidgets.QGraphicsWidget.__init__(self, parent)
         self.setAcceptHoverEvents(True)
         self._setState(state)
 
@@ -864,7 +864,7 @@ class GlideDisplayButton(DisplayButton):
         self.siblings = [None for i in range(16)]
 
 
-class DisplayCombo(QtGui.QGraphicsWidget):
+class DisplayCombo(QtWidgets.QGraphicsWidget):
     pen = brush = QtGui.QColor(30, 50, 40)
     normal_frame_border_pen = QtGui.QColor(220, 220, 220, 220)
     normal_frame_border_brush = QtGui.QColor(220, 220, 220, 120)
@@ -875,12 +875,12 @@ class DisplayCombo(QtGui.QGraphicsWidget):
     currentIndexChanged = QtCore.pyqtSignal(int)
 
     def __init__(self, parent, label_class):
-        QtGui.QGraphicsWidget.__init__(self, parent)
+        QtWidgets.QGraphicsWidget.__init__(self, parent)
         self.setAcceptHoverEvents(True)
         self.padding = 2
         self.currentIndex = 0
-        self.setSizePolicy(QtGui.QSizePolicy.Preferred, QtGui.QSizePolicy.Minimum)
-        self.layout = QtGui.QGraphicsGridLayout()
+        self.setSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Minimum)
+        self.layout = QtWidgets.QGraphicsGridLayout()
         self.setLayout(self.layout)
         self.value_lbl = label_class(self)
         self.count = self.value_lbl.count
@@ -1045,7 +1045,7 @@ class LengthCombo(ArpDisplayComboClass):
         ArpDisplayComboClass.__init__(self, parent, LengthComboLabel, step, combo_list)
 
 
-class ArpStepWidget(QtGui.QGraphicsWidget):
+class ArpStepWidget(QtWidgets.QGraphicsWidget):
     default_pen = QtGui.QColor(10, 30, 20)
     active_pen = QtGui.QColor(QtCore.Qt.red)
     silent_pen = QtGui.QColor(QtCore.Qt.gray)
@@ -1069,7 +1069,7 @@ class ArpStepWidget(QtGui.QGraphicsWidget):
     timingChanged = QtCore.pyqtSignal(int)
 
     def __init__(self, parent=None):
-        QtGui.QGraphicsWidget.__init__(self, parent)
+        QtWidgets.QGraphicsWidget.__init__(self, parent)
         self.setAcceptHoverEvents(True)
         self.rect = QtCore.QRectF(0, 35, 40, 10)
         self.top_rect = QtCore.QRectF(0, 25, 40, 10)
@@ -1176,7 +1176,7 @@ class ArpStepWidget(QtGui.QGraphicsWidget):
 
     def hoverMoveEvent(self, event):
         pos = event.pos()
-        if QtGui.QApplication.mouseButtons() & QtCore.Qt.LeftButton: return
+        if QtWidgets.QApplication.mouseButtons() & QtCore.Qt.LeftButton: return
         for item in self.collidingItems():
             item.setZValue(0)
         self.setZValue(1)
@@ -1311,7 +1311,7 @@ class ArpLengthWidget(BaseDisplayWidget):
         self.brush = QtGui.QColor(30, 50, 40, 80)
         self.reference_x = 60
         self.reference_width = 40
-#        self.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+#        self.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
 
     def setHeight(self, value):
         self.height = value
@@ -1342,7 +1342,7 @@ class StepLine(BaseDisplayWidget):
         BaseDisplayWidget.__init__(self, parent)
         self.pen = QtGui.QPen(self.pen)
         self.pen.setStyle(QtCore.Qt.DotLine)
-        self.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Expanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Expanding)
         self.setMaximumWidth(3)
         if short:
             self.paint = self.paintShort
@@ -1371,7 +1371,7 @@ class FakeObject(QtCore.QObject):
         self.main.blockSignals(False)
 
 
-class ArpEditor(QtGui.QGraphicsView):
+class ArpEditor(QtWidgets.QGraphicsView):
     border_grad = QtGui.QConicalGradient(QtCore.QPointF(.5, .5), 45)
     border_grad.setCoordinateMode(QtGui.QConicalGradient.ObjectBoundingMode)
     _up = QtGui.QColor(80, 80, 80)
@@ -1394,16 +1394,16 @@ class ArpEditor(QtGui.QGraphicsView):
     scene_rect = QtCore.QRectF(0, 0, 1150, 120)
 
     def __init__(self, parent):
-        QtGui.QGraphicsView.__init__(self, parent)
+        QtWidgets.QGraphicsView.__init__(self, parent)
         self.main = parent
         self.setFrameStyle(0)
-        self.scene = QtGui.QGraphicsScene(self)
+        self.scene = QtWidgets.QGraphicsScene(self)
         self.setRenderHints(QtGui.QPainter.Antialiasing)
         self.setScene(self.scene)
         self.setStyleSheet('background: transparent')
         self.create_layout()
         self.setMinimumSize(600, 160)
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.MinimumExpanding)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.MinimumExpanding)
 
         for step in range(16):
             step_object = FakeObject(self)
@@ -1436,15 +1436,15 @@ class ArpEditor(QtGui.QGraphicsView):
         self.length_widget = ArpLengthWidget()
         self.scene.addItem(self.length_widget)
 
-        panel = QtGui.QGraphicsWidget()
+        panel = QtWidgets.QGraphicsWidget()
         self.panel = panel
         panel.setContentsMargins(0, 0, 0, 0)
         self.scene.addItem(panel)
-        layout = QtGui.QGraphicsGridLayout()
+        layout = QtWidgets.QGraphicsGridLayout()
         self.layout = layout
         layout.setRowMinimumHeight(1, 60)
         panel.setLayout(layout)
-        arp_widget = QtGui.QGraphicsWidget()
+        arp_widget = QtWidgets.QGraphicsWidget()
         self.arp_widget = arp_widget
         self.scene.addItem(arp_widget)
         arp_widget.setTransform(QtGui.QTransform.fromScale(.4, 60/90.))
@@ -1535,13 +1535,13 @@ class ArpEditor(QtGui.QGraphicsView):
         self.bound_ref = step_lbl, length_combo
         self.size_ref = layout.itemAt(2, 1), layout.itemAt(2, 2)
 
-        self.panel_shadow = QtGui.QGraphicsDropShadowEffect()
+        self.panel_shadow = QtWidgets.QGraphicsDropShadowEffect()
         self.panel_shadow.setBlurRadius(4)
         self.panel_shadow.setOffset(1, 1)
         self.panel_shadow.setColor(QtGui.QColor(100, 100, 100, 150))
         self.panel.setGraphicsEffect(self.panel_shadow)
 
-        self.arp_shadow = QtGui.QGraphicsDropShadowEffect()
+        self.arp_shadow = QtWidgets.QGraphicsDropShadowEffect()
         self.arp_shadow.setBlurRadius(4)
         self.arp_shadow.setOffset(1, 1)
         self.arp_shadow.setColor(QtGui.QColor(100, 100, 100, 150))
@@ -1585,7 +1585,7 @@ class ArpEditor(QtGui.QGraphicsView):
         qp.setBrush(self.bgd_brush)
         qp.drawRoundedRect(self.border_rect, 4, 4)
         qp.end()
-        QtGui.QGraphicsView.paintEvent(self, event)
+        QtWidgets.QGraphicsView.paintEvent(self, event)
 
     def resizeEvent(self, event):
         width = self.width()
@@ -1623,7 +1623,7 @@ class MidiInDisplayButton(DisplayButton):
         self.normal_frame_border_brush = self.normal_frame_border_brush.lighter(125)
         self.frame_border_pen = self.normal_frame_border_pen
         self.frame_border_brush = self.normal_frame_border_brush
-        self.setSizePolicy(QtGui.QSizePolicy.Maximum, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.Maximum, QtWidgets.QSizePolicy.Maximum)
         self.setMinimumHeight(max(self.path.boundingRect().height(), self.font_metrics.height()))
         self.setMaximumWidth(self.path.boundingRect().width()+self.font_metrics.width('0')*3+4)
         self.setAcceptHoverEvents(False)
@@ -1676,7 +1676,7 @@ class MidiDisplayButton(DisplayButton):
         self.focus_frame_border_brush = self.focus_frame_border_brush.lighter(125)
         self.frame_border_pen = self.normal_frame_border_pen
         self.frame_border_brush = self.normal_frame_border_brush
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Maximum)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Maximum)
         self.setMinimumHeight(max(self.path.boundingRect().height(), self.font_metrics.height()))
 #        self.setMaximumHeight(32)
         self.setToolTip('Open MIDI connections dialog\n(right click for direct access menu)')
@@ -1704,7 +1704,7 @@ class MidiDisplayButton(DisplayButton):
         self.update()
 
 
-class BlofeldDisplay(QtGui.QGraphicsView):
+class BlofeldDisplay(QtWidgets.QGraphicsView):
     border_grad = QtGui.QConicalGradient(QtCore.QPointF(.5, .5), 45)
     border_grad.setCoordinateMode(QtGui.QConicalGradient.ObjectBoundingMode)
     _up = QtGui.QColor(80, 80, 80)
@@ -1726,18 +1726,18 @@ class BlofeldDisplay(QtGui.QGraphicsView):
     frame_border_brush = QtGui.QColor(220, 220, 220, 120)
 
     def __init__(self, parent):
-        QtGui.QGraphicsView.__init__(self, parent)
+        QtWidgets.QGraphicsView.__init__(self, parent)
         self.main = parent
         self.setFrameStyle(0)
-        self.scene = QtGui.QGraphicsScene(self)
+        self.scene = QtWidgets.QGraphicsScene(self)
         self.setScene(self.scene)
         self.setStyleSheet('background: transparent')
-        self.shadow = QtGui.QGraphicsDropShadowEffect()
+        self.shadow = QtWidgets.QGraphicsDropShadowEffect()
         self.shadow.setBlurRadius(4)
         self.shadow.setOffset(1, 1)
         self.shadow.setColor(QtGui.QColor(100, 100, 100, 150))
         self.create_layout()
-        self.setSizePolicy(QtGui.QSizePolicy.MinimumExpanding, QtGui.QSizePolicy.Preferred)
+        self.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding, QtWidgets.QSizePolicy.Preferred)
 
         for char in range(16):
             char_object = FakeObject(self)
@@ -1749,29 +1749,29 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         self.prog_name.letter_changed.connect(lambda id, char: setattr(self.main, 'Name_Char_{:02}'.format(id), char))
 
     def create_layout(self):
-        panel = QtGui.QGraphicsWidget()
+        panel = QtWidgets.QGraphicsWidget()
         self.panel = panel
         self.scene.addItem(panel)
-        layout = QtGui.QGraphicsGridLayout()
+        layout = QtWidgets.QGraphicsGridLayout()
         layout.setSpacing(0)
         panel.setLayout(layout)
         layout.setColumnSpacing(0, 4)
         layout.setColumnSpacing(1, 8)
 
-        side = QtGui.QGraphicsGridLayout()
+        side = QtWidgets.QGraphicsGridLayout()
         side.setVerticalSpacing(1)
         side.setHorizontalSpacing(2)
-        side.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Maximum)
+        side.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Maximum)
         layout.addItem(side, 0, 1, 3, 1, QtCore.Qt.AlignVCenter)
 
-        bank_layout = QtGui.QGraphicsGridLayout()
+        bank_layout = QtWidgets.QGraphicsGridLayout()
         self.bank_layout = bank_layout
         side.addItem(bank_layout, 0, 0)
         bank_label = SmallLabelTextWidget('Bank', panel, fixed=True)
         bank_layout.addItem(bank_label, 0, 0, 1, 2, QtCore.Qt.AlignHCenter)
         self.bank = BankTextWidget(panel)
         bank_layout.addItem(self.bank, 1, 0, QtCore.Qt.AlignVCenter)
-        bank_arrows = QtGui.QGraphicsGridLayout()
+        bank_arrows = QtWidgets.QGraphicsGridLayout()
         bank_layout.addItem(bank_arrows, 1, 1, QtCore.Qt.AlignRight)
         self.bank_up = UpArrowWidget(panel)
         bank_arrows.addItem(self.bank_up, 0, 0)
@@ -1780,10 +1780,10 @@ class BlofeldDisplay(QtGui.QGraphicsView):
 
         bp_spacer = DisplayHSpacer(panel)
 #        bp_spacer.setMaximumWidth(10)
-        bp_spacer.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        bp_spacer.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         side.addItem(bp_spacer, 0, 1)
 
-        prog_layout = QtGui.QGraphicsGridLayout()
+        prog_layout = QtWidgets.QGraphicsGridLayout()
         self.prog_layout = prog_layout
         side.addItem(prog_layout, 0, 2)
         prog_label = SmallLabelTextWidget('Prog', panel, fixed=True)
@@ -1792,7 +1792,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         prog_layout.addItem(prog_spacer, 1, 0)
         self.prog = ProgTextWidget(panel)
         prog_layout.addItem(self.prog, 1, 1, QtCore.Qt.AlignVCenter)
-        prog_arrows = QtGui.QGraphicsGridLayout()
+        prog_arrows = QtWidgets.QGraphicsGridLayout()
         prog_layout.addItem(prog_arrows, 1, 2, QtCore.Qt.AlignRight)
         self.prog_up = UpArrowWidget(panel)
         prog_arrows.addItem(self.prog_up, 0, 0)
@@ -1801,19 +1801,19 @@ class BlofeldDisplay(QtGui.QGraphicsView):
 
         side.addItem(DisplayVSpacer(panel, 10), 4, 0)
 
-        cat_layout = QtGui.QGraphicsGridLayout()
+        cat_layout = QtWidgets.QGraphicsGridLayout()
         self.cat_layout = cat_layout
-        cat_layout.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Maximum)
+        cat_layout.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Maximum)
         side.addItem(cat_layout, 5, 0, 1, 3)
 
         self.cat_label = SmallLabelTextWidget('Cat: ', panel, fixed=True)
         cat_layout.addItem(self.cat_label, 0, 0, QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter)
         cat_spacer = DisplayHSpacer(panel)
-        cat_spacer.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Fixed)
+        cat_spacer.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
         cat_layout.addItem(cat_spacer, 0, 1)
         self.cat_name = CatTextWidget(panel)
         cat_layout.addItem(self.cat_name, 0, 2, QtCore.Qt.AlignRight|QtCore.Qt.AlignVCenter)
-        cat_arrows = QtGui.QGraphicsGridLayout()
+        cat_arrows = QtWidgets.QGraphicsGridLayout()
         cat_layout.addItem(cat_arrows, 0, 3, QtCore.Qt.AlignRight)
         self.cat_up = UpArrowWidget(panel)
         cat_arrows.addItem(self.cat_up, 0, 0)
@@ -1824,7 +1824,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         layout.addItem(self.edited_widget, 0, 2)
 #        self.edited_widget.hide()
         self.edit_mode_label = SmallLabelTextWidget('Sound mode Edit buffer', panel)
-#        self.edit_mode_label.setSizePolicy(QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Expanding)
+#        self.edit_mode_label.setSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         layout.addItem(self.edit_mode_label, 0, 3)
         self.prog_name = ProgLabelTextWidget('Init', panel)
         layout.addItem(self.prog_name, 1, 2, 1, 2)
@@ -1832,7 +1832,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         self.status = SmallLabelTextWidget('Status: ready', panel)
         layout.addItem(self.status, 2, 2, 1, 3)
 
-        buttons_layout = QtGui.QGraphicsGridLayout()
+        buttons_layout = QtWidgets.QGraphicsGridLayout()
         layout.addItem(buttons_layout, 0, 4, 2, 1)
         self.midi_btn = MidiDisplayButton(panel)
         buttons_layout.addItem(self.midi_btn, 0, 0, 1, 2)
@@ -1842,7 +1842,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         buttons_layout.addItem(self.midi_out, 1, 1)
         spacer = DisplayVSpacer(panel)
         spacer.setMaximumHeight(1000)
-        spacer.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Maximum)
+        spacer.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Maximum)
         buttons_layout.addItem(spacer, 2, 0)
 
         self.panel.setGraphicsEffect(self.shadow)
@@ -1858,7 +1858,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         if item is None: return
         if isinstance(item, MidiDisplayButton):
             self.main.show_midi_dialog.emit()
-#            QtGui.QGraphicsView.mouseReleaseEvent(self, event)
+#            QtWidgets.QGraphicsView.mouseReleaseEvent(self, event)
             return
         sound = self.main.sound
         bank = sound.bank
@@ -1998,20 +1998,20 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         self.main.setSound(bank, prog, pgm_send=True)
 
     def show_midi_menu(self, pos, input=True, output=True):
-        menu = QtGui.QMenu()
+        menu = QtWidgets.QMenu()
 
-        in_menu = QtGui.QMenu()
-        in_disconnect = QtGui.QAction('Disconnect all', in_menu)
+        in_menu = QtWidgets.QMenu()
+        in_disconnect = QtWidgets.QAction('Disconnect all', in_menu)
         in_menu.addAction(in_disconnect)
-        sep = QtGui.QAction(in_menu)
+        sep = QtWidgets.QAction(in_menu)
         sep.setSeparator(True)
         in_menu.addAction(sep)
         menu.addMenu(in_menu)
 
-        out_menu = QtGui.QMenu()
-        out_disconnect = QtGui.QAction('Disconnect all', out_menu)
+        out_menu = QtWidgets.QMenu()
+        out_disconnect = QtWidgets.QAction('Disconnect all', out_menu)
         out_menu.addAction(out_disconnect)
-        sep = QtGui.QAction(out_menu)
+        sep = QtWidgets.QAction(out_menu)
         sep.setSeparator(True)
         out_menu.addAction(sep)
         menu.addMenu(out_menu)
@@ -2032,11 +2032,11 @@ class BlofeldDisplay(QtGui.QGraphicsView):
                     out_port_list.append(port)
             if in_port_list:
                 in_clients = True
-                client_menu = QtGui.QMenu(client.name, menu)
+                client_menu = QtWidgets.QMenu(client.name, menu)
                 in_menu.addMenu(client_menu)
                 client_menu_connections = []
                 for port in in_port_list:
-                    port_item = QtGui.QAction(port.name, in_menu)
+                    port_item = QtWidgets.QAction(port.name, in_menu)
                     port_item.setData(port)
                     port_item.setCheckable(True)
                     if any([True for conn in port.connections.output if conn.dest == self.main.midi.input]):
@@ -2046,19 +2046,19 @@ class BlofeldDisplay(QtGui.QGraphicsView):
                         client_menu_connections.append(port)
                     client_menu.addAction(port_item)
                 if len(client_menu_connections) > 1:
-                    sep = QtGui.QAction(client_menu)
+                    sep = QtWidgets.QAction(client_menu)
                     sep.setSeparator(True)
                     client_menu.addAction(sep)
-                    client_disconnect_all = QtGui.QAction('Disconnect all', client_menu)
+                    client_disconnect_all = QtWidgets.QAction('Disconnect all', client_menu)
                     client_disconnect_all.setData((INPUT, client_menu_connections))
                     client_menu.addAction(client_disconnect_all)
             if out_port_list:
                 out_clients = True
-                client_menu = QtGui.QMenu(client.name, menu)
+                client_menu = QtWidgets.QMenu(client.name, menu)
                 out_menu.addMenu(client_menu)
                 client_menu_connections = []
                 for port in out_port_list:
-                    port_item = QtGui.QAction(port.name, out_menu)
+                    port_item = QtWidgets.QAction(port.name, out_menu)
                     port_item.setData(port)
                     port_item.setCheckable(True)
                     if any([True for conn in port.connections.input if conn.src == self.main.midi.output]):
@@ -2068,10 +2068,10 @@ class BlofeldDisplay(QtGui.QGraphicsView):
                         client_menu_connections.append(port)
                     client_menu.addAction(port_item)
                 if len(client_menu_connections) > 1:
-                    sep = QtGui.QAction(client_menu)
+                    sep = QtWidgets.QAction(client_menu)
                     sep.setSeparator(True)
                     client_menu.addAction(sep)
-                    client_disconnect_all = QtGui.QAction('Disconnect all', client_menu)
+                    client_disconnect_all = QtWidgets.QAction('Disconnect all', client_menu)
                     client_disconnect_all.setData((OUTPUT, client_menu_connections))
                     client_menu.addAction(client_disconnect_all)
         if not in_clients:
@@ -2093,13 +2093,13 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         if input and output:
             res = menu.exec_(self.mapToGlobal(pos))
         elif input:
-            in_header = QtGui.QAction('Input', self)
+            in_header = QtWidgets.QAction('Input', self)
             in_header.setSeparator(True)
             in_menu.insertAction(in_disconnect, in_header)
             in_menu.setSeparatorsCollapsible(False)
             res = in_menu.exec_(self.mapToGlobal(pos))
         else:
-            out_header = QtGui.QAction('Output', self)
+            out_header = QtWidgets.QAction('Output', self)
             out_header.setSeparator(True)
             out_menu.insertAction(out_disconnect, out_header)
             out_menu.setSeparatorsCollapsible(False)
@@ -2150,7 +2150,7 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         qp.drawRoundedRect(self.bank_rect, 4, 4)
         qp.drawRoundedRect(self.prog_rect, 4, 4)
         qp.end()
-        QtGui.QGraphicsView.paintEvent(self, event)
+        QtWidgets.QGraphicsView.paintEvent(self, event)
 
     def resizeEvent(self, event):
         width = self.width()
@@ -2191,14 +2191,14 @@ class BlofeldDisplay(QtGui.QGraphicsView):
         self.panel.update()
 
 
-class EditingMask(QtGui.QWidget):
+class EditingMask(QtWidgets.QWidget):
     def __init__(self, parent, reference=None):
-        QtGui.QWidget.__init__(self, parent)
+        QtWidgets.QWidget.__init__(self, parent)
         self.main = parent
         self.reference = reference
-        blur = QtGui.QGraphicsBlurEffect()
+        blur = QtWidgets.QGraphicsBlurEffect()
         self.setGraphicsEffect(blur)
-        opacity = QtGui.QGraphicsOpacityEffect()
+        opacity = QtWidgets.QGraphicsOpacityEffect()
         opacity.setOpacity(0)
 
     def setReference(self, reference):
@@ -2215,7 +2215,7 @@ class EditingMask(QtGui.QWidget):
         qp.end()
 
     def resizeEvent(self, event):
-        QtGui.QWidget.resizeEvent(self, event)
+        QtWidgets.QWidget.resizeEvent(self, event)
         if not self.reference: return
         object_rect = self.reference.mapToScene(self.reference.rect())
         real_rect = self.main.display.mapFromScene(object_rect).boundingRect()
@@ -2233,7 +2233,7 @@ class EditingMask(QtGui.QWidget):
         self.setMask(bmp)
 
 
-class Editor(QtGui.QMainWindow):
+class Editor(QtWidgets.QMainWindow):
     sound_edited = QtCore.pyqtSignal()
     sound_changed = QtCore.pyqtSignal(int, int)
     midi_event = QtCore.pyqtSignal(object)
@@ -2257,7 +2257,7 @@ class Editor(QtGui.QMainWindow):
         efx_ranges = pickle.load(_fx)
 
     def __init__(self, main):
-        QtGui.QMainWindow.__init__(self, parent=None)
+        QtWidgets.QMainWindow.__init__(self, parent=None)
         load_ui(self, 'editor.ui')
         self.setContentsMargins(2, 2, 2, 2)
         pal = self.palette()
@@ -2291,13 +2291,13 @@ class Editor(QtGui.QMainWindow):
 
         self.grid.addWidget(self.create_mixer(), 0, 0, 2, 1)
 
-        display_layout = QtGui.QGridLayout()
+        display_layout = QtWidgets.QGridLayout()
         self.grid.addLayout(display_layout, 0, 1, 1, 2)
         display_layout.addLayout(self.create_display(), 0, 0, 2, 1)
         self.sound_edited.connect(lambda: self.display.edited_widget.setOpacity(1))
         display_layout.addWidget(HSpacer(max_width=8), 0, 1)
 
-        side_layout = QtGui.QGridLayout()
+        side_layout = QtWidgets.QGridLayout()
         display_layout.addLayout(side_layout, 1, 2)
 
         self.autosave_btn = SquareButton(self, 'Autosave', checkable=True, checked=False, size=12, label_pos=RIGHT)
@@ -2313,40 +2313,40 @@ class Editor(QtGui.QMainWindow):
         side_layout.addWidget(randomize_btn, 0, 1)
 
         dump_action = ActionLabel(self, text='Dump')
-        dump_send_current_action = QtGui.QAction('Current sound location', self)
+        dump_send_current_action = QtWidgets.QAction('Current sound location', self)
         self.sound_changed.connect(lambda bank, prog: dump_send_current_action.setEnabled(True if bank <= self.blofeld_library.banks else False))
         dump_send_current_action.triggered.connect(lambda: self.dump_send_create((self.sound.bank, self.sound.prog)))
-        dump_send_single_action = QtGui.QAction('Sound Mode Edit Buffer ', self)
+        dump_send_single_action = QtWidgets.QAction('Sound Mode Edit Buffer ', self)
         dump_send_single_action.triggered.connect(lambda: self.dump_send_create(SMEB))
-        dump_send_multi_action = QtGui.QAction('Multi Instrument', self)
-        multi_menu = QtGui.QMenu()
+        dump_send_multi_action = QtWidgets.QAction('Multi Instrument', self)
+        multi_menu = QtWidgets.QMenu()
         for multi in range(16):
-            item = QtGui.QAction('Edit Buffer', multi_menu)
+            item = QtWidgets.QAction('Edit Buffer', multi_menu)
             item.triggered.connect(lambda: self.dump_send_create((0x7f, multi)))
             multi_menu.addAction(item)
         dump_send_multi_action.setMenu(multi_menu)
-        sep = QtGui.QAction(self)
+        sep = QtWidgets.QAction(self)
         sep.setSeparator(True)
-        dump_request_current_action = QtGui.QAction('Request dump for current sound', self)
+        dump_request_current_action = QtWidgets.QAction('Request dump for current sound', self)
         dump_request_current_action.triggered.connect(lambda: self.dump_request.emit((self.sound.bank, self.sound.prog)))
         self.sound_changed.connect(lambda bank, prog: [dump_request_current_action.setEnabled(True if bank <= self.blofeld_library.banks else False), 
                                                        dump_request_current_action.setText('Request dump for sound{}'.format(' {}{:03}'.format(ascii_uppercase[bank], prog+1) if bank <= self.blofeld_library.banks else ''))
                                                        ])
-        dump_request_buffer_action = QtGui.QAction('Request dump for Sound Edit buffer', self)
+        dump_request_buffer_action = QtWidgets.QAction('Request dump for Sound Edit buffer', self)
         dump_request_buffer_action.triggered.connect(lambda: self.dump_request.emit((0x7f, 0x0)))
         dump_action.addActions(dump_send_current_action, dump_send_single_action, dump_send_multi_action, sep, dump_request_current_action, dump_request_buffer_action)
         side_layout.addWidget(dump_action, 1, 1)
 
         logo = QtGui.QIcon(local_path('blofeld_logo.svg')).pixmap(QtCore.QSize(160, 160)).toImage()
-        logo_widget = QtGui.QLabel()
+        logo_widget = QtWidgets.QLabel()
         logo_widget.mouseDoubleClickEvent = self.logo_click
         logo_widget.setPixmap(QtGui.QPixmap().fromImage(logo))
-        logo_widget.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.MinimumExpanding)
+        logo_widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.MinimumExpanding)
         logo_widget.setToolTip('Right click here for...')
         logo_widget.contextMenuEvent = self.menuEvent
         side_layout.addWidget(logo_widget, 2, 0, 1, 2, QtCore.Qt.AlignBottom|QtCore.Qt.AlignRight)
 
-        amp_layout = QtGui.QVBoxLayout()
+        amp_layout = QtWidgets.QVBoxLayout()
         amp_layout.addWidget(self.create_amplifier())
         amp_layout.addWidget(self.create_glide())
         amp_layout.addWidget(self.create_common())
@@ -2367,11 +2367,11 @@ class Editor(QtGui.QMainWindow):
         self.grid.addWidget(self.create_lfo2(), 2, 2)
         self.grid.addWidget(self.create_lfo3(), 3, 2)
 
-        filter_matrix_btn_layout = QtGui.QGridLayout()
+        filter_matrix_btn_layout = QtWidgets.QGridLayout()
         self.grid.addLayout(filter_matrix_btn_layout, 0, 3, 4, 2)
-#        filter_matrix_widget = QtGui.QWidget()
+#        filter_matrix_widget = QtWidgets.QWidget()
 #        filter_matrix_btn_layout.addWidget(filter_matrix_widget)
-#        self.filter_matrix_layout = QtGui.QStackedLayout()
+#        self.filter_matrix_layout = QtWidgets.QStackedLayout()
 #        filter_matrix_widget.setLayout(self.filter_matrix_layout)
 #        self.filter_matrix_layout.addWidget(self.create_filters())
 #        self.filter_matrix_layout.addWidget(self.create_mod_widgets())
@@ -2381,7 +2381,7 @@ class Editor(QtGui.QMainWindow):
         matrix_widget = self.create_mod_widgets()
         filter_matrix_btn_layout.addWidget(matrix_widget, 0, 0)
 
-        btn_layout = QtGui.QHBoxLayout()
+        btn_layout = QtWidgets.QHBoxLayout()
         filter_matrix_btn_layout.addLayout(btn_layout, 1, 0)
         self.filter_matrix_toggle_btn = SquareButton(self, color=QtCore.Qt.darkGreen, size=(20, 16), name='Mod Matrix Editor', label_pos=RIGHT, text_align=QtCore.Qt.AlignLeft)
         btn_layout.addWidget(self.filter_matrix_toggle_btn)
@@ -2404,17 +2404,17 @@ class Editor(QtGui.QMainWindow):
                 self.filter_matrix_toggle_state.emit(id)
                 self.filter_matrix_toggle_btn.setText(filter_matrix_labels[id])
         else:
-            filter_opacity = QtGui.QGraphicsOpacityEffect()
+            filter_opacity = QtWidgets.QGraphicsOpacityEffect()
             filter_opacity.setOpacity(1)
             filter_widget.setGraphicsEffect(filter_opacity)
             filter_widget.raise_()
-            filter_opacity_anim = QtCore.QPropertyAnimation(filter_opacity, 'opacity')
+            filter_opacity_anim = QtCore.QPropertyAnimation(filter_opacity, b'opacity')
             filter_opacity_anim.setDuration(200)
 
-            matrix_opacity = QtGui.QGraphicsOpacityEffect()
+            matrix_opacity = QtWidgets.QGraphicsOpacityEffect()
             matrix_opacity.setOpacity(0)
             matrix_widget.setGraphicsEffect(matrix_opacity)
-            matrix_opacity_anim = QtCore.QPropertyAnimation(matrix_opacity, 'opacity')
+            matrix_opacity_anim = QtCore.QPropertyAnimation(matrix_opacity, b'opacity')
             matrix_opacity_anim.setDuration(200)
             filter_matrix_tuple = (filter_widget, filter_opacity_anim), (matrix_widget, matrix_opacity_anim)
 
@@ -2440,19 +2440,19 @@ class Editor(QtGui.QMainWindow):
 #        adv_arp_lbl = Label(self, 'Arpeggiator Pattern Editor', QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
 #        btn_layout.addWidget(adv_arp_lbl)
 
-        adv_arp_widget = QtGui.QWidget()
+        adv_arp_widget = QtWidgets.QWidget()
         adv_arp_widget.setContentsMargins(0, 0, 0, 0)
-        adv_arp_layout = QtGui.QGridLayout()
+        adv_arp_layout = QtWidgets.QGridLayout()
         adv_arp_layout.setContentsMargins(0, 0, 0, 0)
         adv_arp_widget.setLayout(adv_arp_layout)
         adv_arp_cycle = cycle((0, 1))
         next(adv_arp_cycle)
         adv_arp_labels = 'Arpeggiator Pattern Editor', 'Effects and Arpeggiator'
 
-        adv_widget = QtGui.QWidget()
+        adv_widget = QtWidgets.QWidget()
         adv_widget.setContentsMargins(0, 0, 0, 0)
         adv_arp_layout.addWidget(adv_widget)
-        adv_layout = QtGui.QHBoxLayout()
+        adv_layout = QtWidgets.QHBoxLayout()
         adv_layout.setContentsMargins(0, 0, 0, 0)
         adv_widget.setLayout(adv_layout)
         adv_layout.addWidget(self.create_effect_1())
@@ -2480,17 +2480,17 @@ class Editor(QtGui.QMainWindow):
                 self.efx_arp_toggle_state.emit(id)
                 self.efx_arp_toggle_btn.setText(adv_arp_labels[id])
         else:
-            adv_opacity = QtGui.QGraphicsOpacityEffect()
+            adv_opacity = QtWidgets.QGraphicsOpacityEffect()
             adv_opacity.setOpacity(1)
             adv_widget.setGraphicsEffect(adv_opacity)
             adv_widget.raise_()
-            adv_opacity_anim = QtCore.QPropertyAnimation(adv_opacity, 'opacity')
+            adv_opacity_anim = QtCore.QPropertyAnimation(adv_opacity, b'opacity')
             adv_opacity_anim.setDuration(200)
 
-            arp_opacity = QtGui.QGraphicsOpacityEffect()
+            arp_opacity = QtWidgets.QGraphicsOpacityEffect()
             arp_opacity.setOpacity(0)
             arp_widget.setGraphicsEffect(arp_opacity)
-            arp_opacity_anim = QtCore.QPropertyAnimation(arp_opacity, 'opacity')
+            arp_opacity_anim = QtCore.QPropertyAnimation(arp_opacity, b'opacity')
             arp_opacity_anim.setDuration(200)
             adv_arp_tuple = (adv_widget, adv_opacity_anim), (arp_widget, arp_opacity_anim)
 
@@ -2511,7 +2511,7 @@ class Editor(QtGui.QMainWindow):
 
         self.efx_arp_toggle_btn.clicked.connect(lambda state: adv_arp_set())
 
-        lower_layout = QtGui.QGridLayout()
+        lower_layout = QtWidgets.QGridLayout()
         self.grid.addLayout(lower_layout, 4, 0, 1, 5)
         lower_layout.addLayout(self.create_envelopes(), 0, 0, 2, 1)
 
@@ -2591,10 +2591,10 @@ class Editor(QtGui.QMainWindow):
             event.ignore()
 
     def menuEvent(self, event):
-        menu = QtGui.QMenu()
+        menu = QtWidgets.QMenu()
         menu.addAction(self.main.settingsAction)
         menu.addAction(self.main.globalsAction)
-        sep = QtGui.QAction(self)
+        sep = QtWidgets.QAction(self)
         sep.setSeparator(True)
         menu.addAction(sep)
         menu.addAction(self.main.aboutAction)
@@ -2628,9 +2628,9 @@ class Editor(QtGui.QMainWindow):
             self.keyboard.keys[note].release()
 
     def create_filters(self):
-        container = QtGui.QWidget()
+        container = QtWidgets.QWidget()
         container.setContentsMargins(-3, -3, -3, -3)
-        filter_layout = QtGui.QGridLayout()
+        filter_layout = QtWidgets.QGridLayout()
         container.setLayout(filter_layout)
         filter_layout.setRowMinimumHeight(0, 60)
         filter_layout.addWidget(self.create_filter_sel(), 0, 0, 2, 2)
@@ -2644,36 +2644,36 @@ class Editor(QtGui.QMainWindow):
         def set_octave(oct):
             setattr(self, 'octave', oct-2)
         frame = Frame(self)
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         frame.setLayout(layout)
 
         mod = Slider(self, name='MOD')
         mod.valueChanged.connect(lambda value: self.send_ctrl(1, value))
         layout.addWidget(mod, 0, 0, 3, 1)
 
-        chan_layout = QtGui.QHBoxLayout()
+        chan_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(chan_layout, 0, 1)
         chan_layout.addWidget(Label(self, 'Ch'))
         channel = Combo(self, value_list=[str(c) for c in range(1, 17)])
         channel.indexChanged.connect(set_channel)
-        channel.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+        channel.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         chan_layout.addWidget(channel)
 
-        oct_layout = QtGui.QHBoxLayout()
+        oct_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(oct_layout, 0, 2)
         oct_layout.addWidget(Label(self, 'Oct'))
         octave = Combo(self, value_list=[str(o) for o in range(-2, 3)], default=2, wheel_dir=False)
         octave.indexChanged.connect(set_octave)
         oct_layout.addWidget(octave)
 
-        notes_off_layout = QtGui.QHBoxLayout()
+        notes_off_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(notes_off_layout, 1, 1, 1, 2)
         all_notes_off = SquareButton(self, color=QtCore.Qt.darkRed, size=12)
         all_notes_off.clicked.connect(lambda: self.send_ctrl(123, 0))
         notes_off_layout.addWidget(all_notes_off)
         notes_off_layout.addWidget(Label(self, 'All notes OFF'), QtCore.Qt.AlignLeft)
 
-        sounds_off_layout = QtGui.QHBoxLayout()
+        sounds_off_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(sounds_off_layout, 2, 1, 1, 2)
         all_sounds_off = SquareButton(self, color=QtCore.Qt.darkRed, size=12)
         all_sounds_off.clicked.connect(lambda: self.send_ctrl(120, 0))
@@ -2685,16 +2685,16 @@ class Editor(QtGui.QMainWindow):
     def create_arp(self):
         frame = Frame(self, 'Arpeggiator')
         frame.setContentsMargins(2, 2, 2, 2)
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         frame.setLayout(layout)
 
-        mode_layout = QtGui.QHBoxLayout()
+        mode_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(mode_layout, 0, 0)
         mode_layout.addWidget(HSpacer())
         mode_layout.addWidget(Label(self, 'Mode'))
         arp_mode = BlofeldCombo(self, self.params.Arpeggiator_Mode, name='', values=['off', 'on', '1 shot', 'Hold'])
         mode_layout.addWidget(arp_mode)
-        pattern_layout = QtGui.QHBoxLayout()
+        pattern_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(pattern_layout, 1, 0)
         pattern_layout.addWidget(Label(self, 'Pattern'))
         arp_patterns = [
@@ -2719,7 +2719,7 @@ class Editor(QtGui.QMainWindow):
         pattern = BlofeldCombo(self, self.params.Arpeggiator_Pattern, values=arp_patterns, name='')
         pattern_layout.addWidget(pattern)
 
-        tempo_layout = QtGui.QHBoxLayout()
+        tempo_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(tempo_layout, 2, 0)
         tempo_layout.addWidget(Label(self, 'Tempo'), QtCore.Qt.AlignTop)
         tempo = BlofeldDial(self, self.params.Arpeggiator_Tempo, size=24, name='')
@@ -2733,7 +2733,7 @@ class Editor(QtGui.QMainWindow):
         ptn_reset = BlofeldButton(self, self.params.Arpeggiator_Ptn_Reset, checkable=True, size=20, name='Reset')
         tempo_layout.addWidget(ptn_reset)
 
-        note_layout = QtGui.QHBoxLayout()
+        note_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(note_layout, 3, 0)
         note_length = BlofeldCombo(self, self.params.Arpeggiator_Length, name='Note Len.')
         note_layout.addWidget(note_length)
@@ -2743,7 +2743,7 @@ class Editor(QtGui.QMainWindow):
         note_timing = BlofeldCombo(self, self.params.Arpeggiator_Timing_Factor, name='Timing')
         note_layout.addWidget(note_timing)
 
-        adv_layout = QtGui.QHBoxLayout()
+        adv_layout = QtWidgets.QHBoxLayout()
         layout.addLayout(adv_layout, 4, 0)
         octave = BlofeldCombo(self, self.params.Arpeggiator_Octave, name='Octave')
         adv_layout.addWidget(octave)
@@ -2797,8 +2797,8 @@ class Editor(QtGui.QMainWindow):
 
     def randomize(self):
         if self.edited:
-            res = QtGui.QMessageBox.question(self, 'Randomize', 'The current sound has been modified, are you sure you want to randomize it?', QtGui.QMessageBox.Yes|QtGui.QMessageBox.Cancel)
-            if res != QtGui.QMessageBox.Yes: return
+            res = QtWidgets.QMessageBox.question(self, 'Randomize', 'The current sound has been modified, are you sure you want to randomize it?', QtWidgets.QMessageBox.Yes|QtWidgets.QMessageBox.Cancel)
+            if res != QtWidgets.QMessageBox.Yes: return
         self.notify = False
         for p in self.params:
             if p.attr is None: continue
@@ -2870,11 +2870,11 @@ class Editor(QtGui.QMainWindow):
             bank, prog = SMEB
         else:
             bank, prog = dest
-            res = QtGui.QMessageBox.warning(self, 'Dump sound to Blofeld', 
+            res = QtWidgets.QMessageBox.warning(self, 'Dump sound to Blofeld', 
                                             'You are going to send a sound dump to the Blofeld at location "{}{:03}".\nThis action cannot be undone. Do you want to proceed?'.format(ascii_uppercase[bank], prog+1), 
-                                            QtGui.QMessageBox.Ok|QtGui.QMessageBox.Cancel
+                                            QtWidgets.QMessageBox.Ok|QtWidgets.QMessageBox.Cancel
                                             )
-            if res != QtGui.QMessageBox.Ok: return
+            if res != QtWidgets.QMessageBox.Ok: return
         self.dump_send.emit(Sound([bank, prog]+data))
 
     def reset_advanced_widgets(self):
@@ -2886,7 +2886,7 @@ class Editor(QtGui.QMainWindow):
 #        self.filter_routing_combo.indexChanged.emit(self.filter_routing_combo.currentIndex())
 
     def create_display(self):
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         self.display = BlofeldDisplay(self)
         layout.addWidget(self.display, 0, 0, 4, 1)
 
@@ -2933,10 +2933,10 @@ class Editor(QtGui.QMainWindow):
     def create_common(self):
         frame = Frame(self, 'Common')
         frame.setContentsMargins(2, 2, 2, 2)
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         frame.setLayout(layout)
 
-        pitch_layout = QtGui.QGridLayout()
+        pitch_layout = QtWidgets.QGridLayout()
         layout.addLayout(pitch_layout)
         pitch_layout.addWidget(Section(self, border=True, alpha=255), 1, 0, 2, 2)
         pitch_layout.addWidget(VSpacer(min_height=20), 0, 0, 1, 1)
@@ -2946,7 +2946,7 @@ class Editor(QtGui.QMainWindow):
         pitch_amount = BlofeldDial(self, self.params.Osc_Pitch_Amount, size=24, name='')
         pitch_layout.addWidget(pitch_amount, 2, 1)
 
-        uni_layout = QtGui.QGridLayout()
+        uni_layout = QtWidgets.QGridLayout()
         layout.addLayout(uni_layout)
         alloc = BlofeldCombo(self, self.params.Allocation_Mode_and_Unisono, sub_par='Allocation', name='Allocation')
         uni_layout.addWidget(alloc, 0, 0, 1, 2)
@@ -2958,9 +2958,9 @@ class Editor(QtGui.QMainWindow):
         return frame
 
     def create_mod_widgets(self):
-        widget = QtGui.QWidget()
+        widget = QtWidgets.QWidget()
         widget.setContentsMargins(-3, -3, -3, -3)
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         widget.setLayout(layout)
         layout.addWidget(self.create_modifiers())
         layout.addWidget(self.create_mod_matrix())
@@ -2968,7 +2968,7 @@ class Editor(QtGui.QMainWindow):
 
     def create_modifiers(self):
         frame = Frame(self, 'Modifiers')
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         frame.setLayout(layout)
 
         for m in range(1, 5):
@@ -2985,12 +2985,12 @@ class Editor(QtGui.QMainWindow):
 
     def create_mod_matrix(self):
         frame = Frame(self, 'Modulation Matrix')
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         frame.setLayout(layout)
 
         mod_id = 1
         for r in range(16):
-            line = QtGui.QHBoxLayout()
+            line = QtWidgets.QHBoxLayout()
             layout.addLayout(line)
             src = BlofeldCombo(self, getattr(self.params, 'Modulation_{}_Source'.format(mod_id)), name='')
             amount = BlofeldSlider(self, getattr(self.params, 'Modulation_{}_Amount'.format(mod_id)), orientation=HORIZONTAL, inverted=True, name='')
@@ -3005,7 +3005,7 @@ class Editor(QtGui.QMainWindow):
     def create_glide(self):
         frame = Frame(self, 'Glide')
         frame.setContentsMargins(2, 12, 2, 2)
-        layout = QtGui.QHBoxLayout()
+        layout = QtWidgets.QHBoxLayout()
         frame.setLayout(layout)
 
         switch = BlofeldButton(self, self.params.Glide, checkable=True, name='')
@@ -3020,8 +3020,8 @@ class Editor(QtGui.QMainWindow):
 
     def create_effect_1(self):
         def create_effects(efx_dict):
-            efx_widget = QtGui.QWidget(self)
-            frame_layout = QtGui.QVBoxLayout()
+            efx_widget = QtWidgets.QWidget(self)
+            frame_layout = QtWidgets.QVBoxLayout()
             items = sorted(efx_dict.items())
             _lines = []
             _line = []
@@ -3029,10 +3029,10 @@ class Editor(QtGui.QMainWindow):
                 efx_range = self.efx_ranges[efx]
                 if len(efx_range) == 128:
                     widget = BlofeldDial(self, self.params[id], name=efx_short_names.get(efx, efx), size=24)
-                    widget.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+                    widget.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
                 else:
                     widget = BlofeldCombo(self, self.params[id], name=efx, values=efx_range)
-                    widget.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+                    widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
                 size = sum([w.minimumWidth() for w in _line])
                 if size > 150:
                     _lines.append(_line)
@@ -3055,7 +3055,7 @@ class Editor(QtGui.QMainWindow):
                     else:
                         _lines[1].insert(0, tmp)
             for l in _lines:
-                line = QtGui.QHBoxLayout()
+                line = QtWidgets.QHBoxLayout()
                 frame_layout.addLayout(line)
                 [line.addWidget(w) if isinstance(w, BlofeldDial) else line.addWidget(w, alignment=QtCore.Qt.AlignHCenter) for w in l]
             if len(_lines) == 1:
@@ -3064,11 +3064,11 @@ class Editor(QtGui.QMainWindow):
             return efx_widget
             
         frame = Frame(self, 'Efx1')
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         frame.setLayout(layout)
         frame.setContentsMargins(2, 2, 2, 2)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1)
         line1.addWidget(HSpacer(max_width=50))
         self.effects_1_type = BlofeldCombo(self, self.params.Effect_1_Type)
@@ -3077,7 +3077,7 @@ class Editor(QtGui.QMainWindow):
         efx_mix = BlofeldDial(self, self.params.Effect_1_Mix, size=24)
         line1.addWidget(efx_mix)
 
-        self.effects_1_layout = QtGui.QStackedLayout()
+        self.effects_1_layout = QtWidgets.QStackedLayout()
         layout.addLayout(self.effects_1_layout)
 
         for efx in sorted(self.efx_params[0]):
@@ -3099,8 +3099,8 @@ class Editor(QtGui.QMainWindow):
 
     def create_effect_2(self):
         def create_effects(efx_dict):
-            efx_widget = QtGui.QWidget(self)
-            frame_layout = QtGui.QVBoxLayout()
+            efx_widget = QtWidgets.QWidget(self)
+            frame_layout = QtWidgets.QVBoxLayout()
             items = sorted(efx_dict.items())
             _lines = []
             _line = []
@@ -3108,10 +3108,10 @@ class Editor(QtGui.QMainWindow):
                 efx_range = self.efx_ranges[efx]
                 if len(efx_range) == 128:
                     widget = BlofeldDial(self, self.params[id], name=efx_short_names.get(efx, efx), size=24)
-                    widget.setSizePolicy(QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Fixed)
+                    widget.setSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
                 else:
                     widget = BlofeldCombo(self, self.params[id], name=efx, values=efx_range)
-                    widget.setSizePolicy(QtGui.QSizePolicy.Fixed, QtGui.QSizePolicy.Fixed)
+                    widget.setSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
                 size = sum([w.minimumWidth() for w in _line])
                 if size > 150:
                     _lines.append(_line)
@@ -3134,7 +3134,7 @@ class Editor(QtGui.QMainWindow):
                     else:
                         _lines[1].insert(0, tmp)
             for l in _lines:
-                line = QtGui.QHBoxLayout()
+                line = QtWidgets.QHBoxLayout()
                 frame_layout.addLayout(line)
                 [line.addWidget(w) if isinstance(w, BlofeldDial) else line.addWidget(w, alignment=QtCore.Qt.AlignHCenter) for w in l]
             if len(_lines) == 1:
@@ -3143,11 +3143,11 @@ class Editor(QtGui.QMainWindow):
             return efx_widget
             
         frame = Frame(self, 'Efx2')
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         frame.setLayout(layout)
         frame.setContentsMargins(2, 2, 2, 2)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1)
         line1.addWidget(HSpacer(max_width=50))
         self.effects_2_type = BlofeldCombo(self, self.params.Effect_2_Type)
@@ -3156,7 +3156,7 @@ class Editor(QtGui.QMainWindow):
         efx_mix = BlofeldDial(self, self.params.Effect_2_Mix, size=24)
         line1.addWidget(efx_mix)
 
-        self.effects_2_layout = QtGui.QStackedLayout()
+        self.effects_2_layout = QtWidgets.QStackedLayout()
         layout.addLayout(self.effects_2_layout)
 
         for efx in sorted(self.efx_params[1]):
@@ -3178,7 +3178,7 @@ class Editor(QtGui.QMainWindow):
 
     def create_amplifier(self):
         frame = Frame(self, 'Amplifier')
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         frame.setLayout(layout)
         frame.setContentsMargins(2, 2, 2, 2)
 
@@ -3194,7 +3194,7 @@ class Editor(QtGui.QMainWindow):
         return frame
 
     def create_envelopes(self):
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         layout.addWidget(self.create_filter_env(), 0, 0, 1, 1)
         layout.addWidget(self.create_amp_env(), 0, 1, 1, 1)
         layout.addWidget(self.create_env_3(), 1, 0, 1, 1)
@@ -3203,7 +3203,7 @@ class Editor(QtGui.QMainWindow):
 
     def create_filter_sel(self):
         frame = Frame(self, 'Filters')
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
         frame.setContentsMargins(2, 2, 2, 2)
 
@@ -3220,11 +3220,11 @@ class Editor(QtGui.QMainWindow):
 
     def create_filter1(self):
         frame = Frame(self, '1')
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
         frame.setContentsMargins(2, 2, 2, 2)
 
-        ftype_layout = QtGui.QHBoxLayout()
+        ftype_layout = QtWidgets.QHBoxLayout()
         ftype_layout.addWidget(HSpacer(self))
         ftype_layout.addWidget(Label(self, 'Type'))
         ftype = BlofeldCombo(self, self.params.Filter_1_Type, name='')
@@ -3241,14 +3241,14 @@ class Editor(QtGui.QMainWindow):
         env_vel = BlofeldDial(self, self.params.Filter_1_Env_Velocity, size=32)
         grid.addWidget(env_vel, 2, 1, 1, 1)
 
-        drive_layout = QtGui.QHBoxLayout()
+        drive_layout = QtWidgets.QHBoxLayout()
         drive = BlofeldDial(self, self.params.Filter_1_Drive, size=24)
         drive_layout.addWidget(drive)
         drive_curve = BlofeldCombo(self, self.params.Filter_1_Drive_Curve)
         drive_layout.addWidget(drive_curve)
         grid.addLayout(drive_layout, 3, 0, 1, 2)
 
-        combos = QtGui.QGridLayout()
+        combos = QtWidgets.QGridLayout()
 
         mod_label = Label(self, 'MOD')
         combos.addWidget(Section(self, border=True, alpha=255), 0, 0, 2, 3)
@@ -3285,11 +3285,11 @@ class Editor(QtGui.QMainWindow):
 
     def create_filter2(self):
         frame = Frame(self, '2')
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
         frame.setContentsMargins(2, 2, 2, 2)
 
-        ftype_layout = QtGui.QHBoxLayout()
+        ftype_layout = QtWidgets.QHBoxLayout()
         ftype_layout.addWidget(HSpacer(self))
         ftype_layout.addWidget(Label(self, 'Type'))
         ftype = BlofeldCombo(self, self.params.Filter_2_Type, name='')
@@ -3306,14 +3306,14 @@ class Editor(QtGui.QMainWindow):
         env_vel = BlofeldDial(self, self.params.Filter_2_Env_Velocity, size=32)
         grid.addWidget(env_vel, 2, 1, 1, 1)
 
-        drive_layout = QtGui.QHBoxLayout()
+        drive_layout = QtWidgets.QHBoxLayout()
         drive = BlofeldDial(self, self.params.Filter_2_Drive, size=24)
         drive_layout.addWidget(drive)
         drive_curve = BlofeldCombo(self, self.params.Filter_2_Drive_Curve)
         drive_layout.addWidget(drive_curve)
         grid.addLayout(drive_layout, 3, 0, 1, 2)
 
-        combos = QtGui.QGridLayout()
+        combos = QtWidgets.QGridLayout()
 
         mod_label = Label(self, 'MOD')
         combos.addWidget(Section(self, border=True, alpha=255), 0, 0, 2, 3)
@@ -3350,10 +3350,10 @@ class Editor(QtGui.QMainWindow):
 
     def create_lfo1(self):
         frame = Frame(self, 'LFO 1')
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         frame.setLayout(layout)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1)
 
         shape = BlofeldCombo(self, self.params.LFO_1_Shape)
@@ -3365,7 +3365,7 @@ class Editor(QtGui.QMainWindow):
         sync = BlofeldButton(self, self.params.LFO_1_Sync, checkable=True, name='Sync')
         line1.addWidget(sync)
 
-        line2 = QtGui.QHBoxLayout()
+        line2 = QtWidgets.QHBoxLayout()
         layout.addLayout(line2)
 
         keytrack = BlofeldDial(self, self.params.LFO_1_Keytrack, size=24)
@@ -3381,10 +3381,10 @@ class Editor(QtGui.QMainWindow):
 
     def create_lfo2(self):
         frame = Frame(self, 'LFO 2')
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         frame.setLayout(layout)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1)
 
         shape = BlofeldCombo(self, self.params.LFO_2_Shape)
@@ -3396,7 +3396,7 @@ class Editor(QtGui.QMainWindow):
         sync = BlofeldButton(self, self.params.LFO_2_Sync, checkable=True, name='Sync')
         line1.addWidget(sync)
 
-        line2 = QtGui.QHBoxLayout()
+        line2 = QtWidgets.QHBoxLayout()
         layout.addLayout(line2)
 
         keytrack = BlofeldDial(self, self.params.LFO_2_Keytrack, size=24)
@@ -3412,10 +3412,10 @@ class Editor(QtGui.QMainWindow):
 
     def create_lfo3(self):
         frame = Frame(self, 'LFO 3')
-        layout = QtGui.QVBoxLayout()
+        layout = QtWidgets.QVBoxLayout()
         frame.setLayout(layout)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1)
 
         shape = BlofeldCombo(self, self.params.LFO_3_Shape)
@@ -3427,7 +3427,7 @@ class Editor(QtGui.QMainWindow):
         sync = BlofeldButton(self, self.params.LFO_3_Sync, checkable=True, name='Sync')
         line1.addWidget(sync)
 
-        line2 = QtGui.QHBoxLayout()
+        line2 = QtWidgets.QHBoxLayout()
         layout.addLayout(line2)
 
         keytrack = BlofeldDial(self, self.params.LFO_3_Keytrack, size=24)
@@ -3456,7 +3456,7 @@ class Editor(QtGui.QMainWindow):
         env.setFixedSize(68, 40)
         self.envelopes.append(env)
         
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
         mode = BlofeldCombo(self, self.params.Filter_Envelope_Mode, sub_par='Mode')
         mode.internalUpdate.connect(env.setEnvelope)
@@ -3516,7 +3516,7 @@ class Editor(QtGui.QMainWindow):
         env.setFixedSize(68, 40)
         self.envelopes.append(env)
         
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
         mode = BlofeldCombo(self, self.params.Amplifier_Envelope_Mode, sub_par='Mode')
         mode.internalUpdate.connect(env.setEnvelope)
@@ -3576,7 +3576,7 @@ class Editor(QtGui.QMainWindow):
         env.setFixedSize(68, 40)
         self.envelopes.append(env)
         
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
         mode = BlofeldCombo(self, self.params.Envelope_3_Mode, sub_par='Mode')
         mode.internalUpdate.connect(env.setEnvelope)
@@ -3636,7 +3636,7 @@ class Editor(QtGui.QMainWindow):
         env.setFixedSize(68, 40)
         self.envelopes.append(env)
         
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
         mode = BlofeldCombo(self, self.params.Envelope_4_Mode, sub_par='Mode')
         mode.internalUpdate.connect(env.setEnvelope)
@@ -3684,10 +3684,10 @@ class Editor(QtGui.QMainWindow):
     def create_mixer(self):
         frame = Frame(self, 'Mixer')
         frame.setContentsMargins(2, 2, 2, 2)
-#        layout = QtGui.QVBoxLayout()
+#        layout = QtWidgets.QVBoxLayout()
 #        frame.setLayout(layout)
 
-        grid = QtGui.QGridLayout()
+        grid = QtWidgets.QGridLayout()
         frame.setLayout(grid)
 #        layout.addLayout(grid)
         grid.setRowMinimumHeight(0, 23)
@@ -3703,7 +3703,7 @@ class Editor(QtGui.QMainWindow):
         grid.addWidget(BlofeldSlider(self, self.params.Mixer_RingMod_Level, name='RingMod'), 1, 3)
         grid.addWidget(BlofeldDial(self, self.params.Mixer_RingMod_Balance, size=24, center=True, default=64, name='Bal'), 2, 3)
 
-        noise = QtGui.QVBoxLayout()
+        noise = QtWidgets.QVBoxLayout()
         grid.addLayout(noise, 0, 4, 2, 1)
         noise.addWidget(BlofeldDial(self, self.params.Mixer_Noise_Colour, size=24, center=True, default=64))
         noise.addWidget(BlofeldSlider(self, self.params.Mixer_Noise_Level, name='Noise'))
@@ -3732,10 +3732,10 @@ class Editor(QtGui.QMainWindow):
                     w.setEnabled(True)
         frame = Frame(self, 'OSC 1')
         frame.setContentsMargins(2, 2, 2, 2)
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         frame.setLayout(layout)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1, 1, 0)
 
         shape = BlofeldCombo(self, self.params.Osc_1_Shape)
@@ -3746,7 +3746,7 @@ class Editor(QtGui.QMainWindow):
         keytrack = BlofeldDial(self, self.params.Osc_1_Keytrack, center=True, size=32, default=64)
         line1.addWidget(keytrack)
 
-        line2 = QtGui.QHBoxLayout()
+        line2 = QtWidgets.QHBoxLayout()
         layout.addLayout(line2, 2, 0)
 
         octave = BlofeldDial(self, self.params.Osc_1_Octave, size=32)
@@ -3802,10 +3802,10 @@ class Editor(QtGui.QMainWindow):
                     w.setEnabled(True)
         frame = Frame(self, 'OSC 2')
         frame.setContentsMargins(2, 2, 2, 2)
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         frame.setLayout(layout)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1, 1, 0)
 
         shape = BlofeldCombo(self, self.params.Osc_2_Shape)
@@ -3816,7 +3816,7 @@ class Editor(QtGui.QMainWindow):
         keytrack = BlofeldDial(self, self.params.Osc_2_Keytrack, center=True, size=32, default=64)
         line1.addWidget(keytrack)
 
-        line2 = QtGui.QHBoxLayout()
+        line2 = QtWidgets.QHBoxLayout()
         layout.addLayout(line2, 2, 0)
 
         octave = BlofeldDial(self, self.params.Osc_2_Octave, size=32)
@@ -3869,10 +3869,10 @@ class Editor(QtGui.QMainWindow):
                     w.setEnabled(False if w in normal_disable else True)
         frame = Frame(self, 'OSC 3')
         frame.setContentsMargins(2, 2, 2, 2)
-        layout = QtGui.QGridLayout()
+        layout = QtWidgets.QGridLayout()
         frame.setLayout(layout)
 
-        line1 = QtGui.QHBoxLayout()
+        line1 = QtWidgets.QHBoxLayout()
         layout.addLayout(line1, 1, 0)
 
         shape = BlofeldCombo(self, self.params.Osc_3_Shape)
@@ -3883,7 +3883,7 @@ class Editor(QtGui.QMainWindow):
         keytrack = BlofeldDial(self, self.params.Osc_3_Keytrack, center=True, size=32, default=64)
         line1.addWidget(keytrack)
 
-        line2 = QtGui.QHBoxLayout()
+        line2 = QtWidgets.QHBoxLayout()
         layout.addLayout(line2, 2, 0)
 
         octave = BlofeldDial(self, self.params.Osc_3_Octave, size=32)

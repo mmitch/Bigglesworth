@@ -10,7 +10,7 @@ from os import path, makedirs
 from itertools import chain
 from shutil import copy
 from string import ascii_uppercase, ascii_letters
-from PyQt4 import QtCore, QtGui
+from PyQt5 import QtCore, QtGui
 
 from bigglesworth.libs import midifile
 from bigglesworth.libs import markdown2
@@ -655,41 +655,41 @@ class Library(QtCore.QObject):
 
     def create_menu(self):
         del self.menu
-        menu = QtGui.QMenu()
-        by_bank = QtGui.QMenu('By bank', menu)
+        menu = QtWidgets.QMenu()
+        by_bank = QtWidgets.QMenu('By bank', menu)
         menu.addMenu(by_bank)
         for id, bank in enumerate(self.sorted.by_bank):
             if not any(bank): continue
-            bank_menu = QtGui.QMenu(ascii_uppercase[id], by_bank)
+            bank_menu = QtWidgets.QMenu(ascii_uppercase[id], by_bank)
             by_bank.addMenu(bank_menu)
             for sound in bank:
                 if sound is None: continue
-                item = QtGui.QAction('{:03} {}'.format(sound.prog+1, sound.name), bank_menu)
+                item = QtWidgets.QAction('{:03} {}'.format(sound.prog+1, sound.name), bank_menu)
                 item.setData((sound.bank, sound.prog))
                 bank_menu.addAction(item)
-        by_cat = QtGui.QMenu('By category', menu)
+        by_cat = QtWidgets.QMenu('By category', menu)
         menu.addMenu(by_cat)
         for cid, cat in enumerate(categories):
-            cat_menu = QtGui.QMenu(by_cat)
+            cat_menu = QtWidgets.QMenu(by_cat)
             by_cat.addMenu(cat_menu)
             cat_len = 0
             for sound in self.sorted.by_cat[cid]:
                 cat_len += 1
-                item = QtGui.QAction(sound.name, cat_menu)
+                item = QtWidgets.QAction(sound.name, cat_menu)
                 item.setData((sound.bank, sound.prog))
                 cat_menu.addAction(item)
             if not len(cat_menu.actions()):
                 cat_menu.setEnabled(False)
             cat_menu.setTitle('{} ({})'.format(cat, cat_len))
-        by_alpha = QtGui.QMenu('Alphabetical', menu)
+        by_alpha = QtWidgets.QMenu('Alphabetical', menu)
         menu.addMenu(by_alpha)
         for alpha in sorted(self.sorted.by_alpha.keys()):
-            alpha_menu = QtGui.QMenu(by_alpha)
+            alpha_menu = QtWidgets.QMenu(by_alpha)
             by_alpha.addMenu(alpha_menu)
             alpha_len = 0
             for sound in self.sorted.by_alpha[alpha]:
                 alpha_len += 1
-                item = QtGui.QAction(sound.name, alpha_menu)
+                item = QtWidgets.QAction(sound.name, alpha_menu)
                 item.setData((sound.bank, sound.prog))
                 alpha_menu.addAction(item)
             if not len(alpha_menu.actions()):
@@ -727,9 +727,9 @@ class LibraryModel(QtGui.QStandardItemModel):
         return self.item(index.row(), SOUND).data(SoundRole).toPyObject()
 
 
-class LibraryProxy(QtGui.QSortFilterProxyModel):
+class LibraryProxy(QtCore.QSortFilterProxyModel):
     def __init__(self, parent=None):
-        QtGui.QSortFilterProxyModel.__init__(self, parent)
+        QtCore.QSortFilterProxyModel.__init__(self, parent)
         self.setDynamicSortFilter(True)
         self.filter_columns = {}
         self.text_filter = None
