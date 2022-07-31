@@ -16,6 +16,7 @@ class MidiDevice(QtCore.QObject):
     midi_event = QtCore.pyqtSignal(object)
 
     def __init__(self, main):
+
         QtCore.QObject.__init__(self)
         self.main = main
         self.type = ALSA

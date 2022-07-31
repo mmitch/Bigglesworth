@@ -16,6 +16,16 @@ except:
     pass
 from time import *
 
+# DEBIAN SPECIFIC PYALSA-FIX, see https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=938965
+# Ugly workaround for #938965. Brute force conversion of constants to
+# ints from their representations:
+for k, v in alsaseq.__dict__.items():
+    if k.startswith("SEQ_"):
+        try:
+            alsaseq.__dict__[k] = int(repr(v).split("(")[1][:-1], 16)
+        except:
+            pass
+        
 
 class Const(object):
     def __init__(self, value=None):
