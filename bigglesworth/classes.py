@@ -493,7 +493,7 @@ class WavetableLibrary(QtCore.QObject):
             slot_item = QtGui.QStandardItem(str(slot))
             date_item = QtGui.QStandardItem()
             file_item = QtGui.QStandardItem()
-            file_item.setData(QtCore.QFileInfo(QtCore.QDir(QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.DataLocation) + '/wavetables/'), '_'))
+            file_item.setData(QtCore.QFileInfo(QtCore.QDir(QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.DataLocation) + '/wavetables/'), '_'))
             uid_item = QtGui.QStandardItem(uid)
             self.model.appendRow([name_item, slot_item, date_item, file_item, uid_item])
         else:
@@ -796,7 +796,7 @@ class LoadingThread(QtCore.QObject):
         self.library.addSoundBulk(sound_list)
 
         #wavetable library load
-        path_txt = QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.DataLocation) + '/wavetables/'
+        path_txt = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.DataLocation) + '/wavetables/'
         wt_path = QtCore.QDir(path_txt)
         if not wt_path.exists():
             QtCore.QDir().mkpath(path_txt)
@@ -823,7 +823,7 @@ class LoadingThread(QtCore.QObject):
 
     def load_library(self):
         sound_list = []
-        data_dir = str(QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.DataLocation).toUtf8())
+        data_dir = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.DataLocation)
         data_path = path.join(data_dir, 'personal_library')
         if not path.exists(data_path):
             try:

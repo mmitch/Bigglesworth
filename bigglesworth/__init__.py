@@ -413,7 +413,7 @@ class BigglesworthObject(QtCore.QObject):
         for bank in self.blofeld_library.data:
             for sound in bank:
                 data.append((sound.bank, sound.prog) + tuple(sound.data))
-        data_dir = str(QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.DataLocation).toUtf8())
+        data_dir = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.DataLocation)
         data_path = path.join(data_dir, 'personal_library')
         if not path.exists(data_path):
             try:

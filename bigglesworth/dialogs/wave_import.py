@@ -286,7 +286,7 @@ class WaveLoad(QtWidgets.QFileDialog):
         self.buttonBox = self.findChildren(QtWidgets.QDialogButtonBox)[0]
         self.open_btn = [b for b in self.buttonBox.buttons() if self.buttonBox.buttonRole(b) == QtWidgets.QDialogButtonBox.AcceptRole][0]
         self.setNameFilters(('Wave files (*.wav)', 'Any files (*)'))
-        self.setSidebarUrls([QtCore.QUrl.fromLocalFile(QtCore.QDir.homePath()), QtCore.QUrl.fromLocalFile(QtGui.QDesktopServices.storageLocation(QtGui.QDesktopServices.MusicLocation))])
+        self.setSidebarUrls([QtCore.QUrl.fromLocalFile(QtCore.QDir.homePath()), QtCore.QUrl.fromLocalFile(QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.MusicLocation))])
 
         self.splitter = self.findChildren(QtWidgets.QSplitter)[0]
         self.wave_panel = WavePanel(self)
