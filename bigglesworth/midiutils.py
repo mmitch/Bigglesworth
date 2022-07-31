@@ -2,6 +2,7 @@
 # *-* coding: utf-8 *-*
 
 import struct
+import re
 from threading import Lock
 from .const import *
 try:
@@ -127,13 +128,12 @@ if ALSA:
     _PortCapsStrings = {}
     _ClientTypeStrings = {}
 
-    for desc, value in list(alsaseq.__dict__.items()):
-        if desc in ['SEQ_USER_CLIENT', 'SEQ_KERNEL_CLIENT']:
-            _ClientTypeStrings[int(value)] = desc[4:].replace('_', ' ').capitalize()
-        elif desc.startswith('SEQ_PORT_CAP_'):
-            _PortCapsStrings[int(value)] = desc[13:].replace('_', ' ').capitalize()
-        elif desc.startswith('SEQ_PORT_TYPE_'):
-            _PortTypeStrings[int(value)] = desc[14:].replace('_', ' ').capitalize()
+    for value, desc in alsaseq._dclienttype.items():
+        _ClientTypeStrings[value] = str(desc)[4:].replace('_', ' ').capitalize()
+    for value, desc in alsaseq._dportcap.items():
+        _PortCapsStrings[value] = str(desc)[13:].replace('_', ' ').capitalize()
+    for value, desc in alsaseq._dporttype.items():
+        _PortTypeStrings[value] = str(desc)[14:].replace('_', ' ').capitalize()
 
     def get_port_type(mask):
         t_list = []
@@ -219,7 +219,7 @@ _event_types_raw = {
 #                        258048: 'SYSRT',
                         262016: ('SYSTEM', 'SYSTEM'),
 #                        536870912: 'DUMMY',
-                        1073741823: ('USR0', 'ANY'), 
+                        1073741823: ('USR1', 'ANY'), 
                         }
 
 _event_type_names = {}
