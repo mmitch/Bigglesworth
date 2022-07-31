@@ -1228,7 +1228,7 @@ class Frame(QtWidgets.QWidget):
         self.setContentsMargins(2, 2+top_margin, 2, 2)
 
         self._fgd_line = self.fgd_lines[0]
-        self.border_anim = QtCore.QPropertyAnimation(self, 'fgd_line')
+        self.border_anim = QtCore.QPropertyAnimation(self, b'fgd_line')
         self.border_anim.setStartValue(self.fgd_lines[0])
         self.border_anim.setEndValue(self.fgd_lines[1])
         self.border_anim.valueChanged.connect(lambda value: self.update())
