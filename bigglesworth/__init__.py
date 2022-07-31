@@ -1078,7 +1078,7 @@ class Librarian(QtWidgets.QMainWindow):
         if self.edit_mode: return
         behaviour = self.main.library_doubleclick
         if behaviour == 0: return
-        sound = self.blofeld_model.item(self.blofeld_model_proxy.mapToSource(index).row(), SOUND).data(SoundRole).toPyObject()
+        sound = self.blofeld_model.item(self.blofeld_model_proxy.mapToSource(index).row(), SOUND).data(SoundRole)
         if behaviour == 1:
             self.program_change_request.emit(sound.bank, sound.prog)
         elif behaviour == 2:
@@ -1099,7 +1099,7 @@ class Librarian(QtWidgets.QMainWindow):
         if event.button() != QtCore.Qt.RightButton: return
         rows = set([self.blofeld_model_proxy.mapToSource(index).row() for index in self.blofeld_sounds_table.selectedIndexes()])
         index = self.blofeld_sounds_table.indexAt(event.pos())
-        sound = self.blofeld_model.item(self.blofeld_model_proxy.mapToSource(index).row(), SOUND).data(SoundRole).toPyObject()
+        sound = self.blofeld_model.item(self.blofeld_model_proxy.mapToSource(index).row(), SOUND).data(SoundRole)
         menu = QtWidgets.QMenu()
         menu.setSeparatorsCollapsible(False)
         header = QtWidgets.QAction(sound.name, menu)
