@@ -2143,7 +2143,7 @@ class Combo(QtWidgets.QComboBox):
 
 #    def event(self, event):
 #        if event.type() == QtCore.QEvent.ToolTip and self.combo_rect.contains(event.pos()):
-#            QtGui.QToolTip.showText(event.globalPos(), self.current, self, self.combo_rect)
+#            QtWidgets.QToolTip.showText(event.globalPos(), self.current, self, self.combo_rect)
 #        return QtWidgets.QWidget.event(self, event)
 
     def _setValue(self, id):
@@ -2678,7 +2678,7 @@ class Dial(QtWidgets.QWidget):
         if self.isVisible() and self.value_rect is None:
 #            self.setToolTip('{}'.format(self.text_value))
             point = QtCore.QPoint(self.translate[0]+self.dial_size, self.translate[1])
-            QtGui.QToolTip.showText(self.mapToGlobal(point), self.text_value, self, QtCore.QRect(0, 0, 20, 20))
+            QtWidgets.QToolTip.showText(self.mapToGlobal(point), self.text_value, self, QtCore.QRect(0, 0, 20, 20))
 #            event = QtGui.QHelpEvent(QtCore.QEvent.ToolTip, point, self.mapToGlobal(point))
 #            self.event(event)
 #        else:
@@ -2692,7 +2692,7 @@ class Dial(QtWidgets.QWidget):
             elif event.type() == QtCore.QEvent.MouseButtonRelease and event.button() == QtCore.Qt.LeftButton:
                 self.cursor_mode = False
         if event.type() == QtCore.QEvent.ToolTip and QtCore.QRect(*self.translate+(self.dial_size, )*2).contains(event.pos()):
-            QtGui.QToolTip.showText(event.globalPos(), self.text_value, self, self.dial_rect.toRect())
+            QtWidgets.QToolTip.showText(event.globalPos(), self.text_value, self, self.dial_rect.toRect())
         return QtWidgets.QWidget.eventFilter(self, source, event)
 
     def wheelEvent(self, event):
