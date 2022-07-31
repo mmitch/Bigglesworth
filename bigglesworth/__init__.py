@@ -1247,7 +1247,7 @@ class Librarian(QtWidgets.QMainWindow):
                 cat_len[s.cat] += 1
         for cat_id in range(1, self.cat_filter_combo.model().rowCount()):
             self.cat_filter_combo.setItemText(cat_id, '{} ({})'.format(
-                                               self.cat_filter_combo.model().item(cat_id).data(QtCore.Qt.UserRole).toPyObject(),
+                                               self.cat_filter_combo.model().item(cat_id).data(QtCore.Qt.UserRole),
                                                cat_len[cat_id-1]
                                                ))
 
@@ -1265,12 +1265,3 @@ def main():
 
 if __name__ == '__main__':
     main()
-
-
-
-
-
-
-
-
-
