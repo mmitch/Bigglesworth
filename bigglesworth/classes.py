@@ -851,8 +851,8 @@ class SettingsGroup(object):
         self._settings = settings
         self._group = settings.group()
         for k in settings.childKeys():
-            value = settings.value(k).toPyObject()
-            if isinstance(value, QtCore.QStringList):
+            value = settings.value(k)
+            if isinstance(value, list):
                 _value = []
                 for v in value:
                     try:
@@ -869,7 +869,7 @@ class SettingsGroup(object):
                         print(e)
                     _value.append(v)
                 value = _value
-            elif isinstance(value, string):
+            elif isinstance(value, str):
                 value = str(value)
                 if value == 'true':
                     value = True
@@ -1010,10 +1010,3 @@ class SettingsObj(object):
         txt = txt.replace('_', '__')
         txt = txt.replace(' ', '_')
         return txt
-
-
-
-
-
-
-
