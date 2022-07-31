@@ -1224,15 +1224,15 @@ class Librarian(QtWidgets.QMainWindow):
         self.blofeld_model_proxy = LibraryProxy()
         self.blofeld_model_proxy.setSourceModel(self.blofeld_model)
         self.blofeld_sounds_table.setModel(self.blofeld_model_proxy)
-        self.blofeld_sounds_table.horizontalHeader().setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        self.blofeld_sounds_table.horizontalHeader().setResizeMode(NAME, QtWidgets.QHeaderView.Stretch)
-        self.blofeld_sounds_table.verticalHeader().setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.blofeld_sounds_table.horizontalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.blofeld_sounds_table.horizontalHeader().setSectionResizeMode(NAME, QtWidgets.QHeaderView.Stretch)
+        self.blofeld_sounds_table.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.blofeld_sounds_table.setItemDelegateForColumn(CATEGORY, CategoryDelegate(self))
         self.blofeld_sounds_table.setItemDelegateForColumn(NAME, NameDelegate(self))
         self.blofeld_sounds_table.setColumnHidden(INDEX, True)
         for c in range(len(sound_headers), self.blofeld_model.columnCount()):
             self.blofeld_sounds_table.setColumnHidden(c, True)
-        self.blofeld_sounds_table.horizontalHeader().setResizeMode(PROG, QtWidgets.QHeaderView.Fixed)
+        self.blofeld_sounds_table.horizontalHeader().setSectionResizeMode(PROG, QtWidgets.QHeaderView.Fixed)
         self.blofeld_sounds_table.resizeColumnToContents(PROG)
 
 

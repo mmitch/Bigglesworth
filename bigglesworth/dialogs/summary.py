@@ -48,7 +48,7 @@ class SummaryWidget(QtWidgets.QSplitter):
         self.param_widget = QtWidgets.QWidget()
         self.addWidget(self.param_widget)
         self.build_summary()
-        self.tree.header().setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.tree.header().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
         self.tree.expandAll()
         self.tree.setMinimumWidth(self.tree.sizeHintForColumn(0))
         self.tree.collapseAll()

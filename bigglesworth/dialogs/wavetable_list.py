@@ -12,9 +12,9 @@ class WavetableListWindow(QtWidgets.QDialog):
         self.wavetable_library = self.main.wavetable_library
         self.wavetable_model = self.wavetable_library.model
         self.wavetable_view.setModel(self.wavetable_model)
-        self.wavetable_view.verticalHeader().setResizeMode(QtWidgets.QHeaderView.ResizeToContents)
-        self.wavetable_view.horizontalHeader().setResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
-        self.wavetable_view.horizontalHeader().setResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
+        self.wavetable_view.verticalHeader().setSectionResizeMode(QtWidgets.QHeaderView.ResizeToContents)
+        self.wavetable_view.horizontalHeader().setSectionResizeMode(1, QtWidgets.QHeaderView.ResizeToContents)
+        self.wavetable_view.horizontalHeader().setSectionResizeMode(2, QtWidgets.QHeaderView.ResizeToContents)
 
         self.new_btn.setIcon(QtGui.QIcon.fromTheme('document-new'))
         self.import_btn.setIcon(QtGui.QIcon.fromTheme('document-open'))
