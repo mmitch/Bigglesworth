@@ -548,9 +548,9 @@ class Routing(QtWidgets.QWidget):
             else:
                 start = self.right_triangle
                 end = self.left_triangle
-            for f in range(0, res/2):
+            for f in range(0, res//2):
                 self.internals.append(start)
-            for f in range(res/2, res-1):
+            for f in range(res//2, res-1):
                 self.internals.append(end)
         else:
             res = int(round(diff/float(fact), 0))
@@ -2420,7 +2420,7 @@ class Dial(QtWidgets.QWidget):
         self.center = center
         self.show_bar = show_bar
         self.name = name
-        self.scale = self.range/self.step if self.range/self.step <= 50 and scale else None
+        self.scale = self.range//self.step if self.range//self.step <= 50 and scale else None
         self.cursor_mode = False
         if not size:
             self.min_size = min_size
@@ -2471,7 +2471,7 @@ class Dial(QtWidgets.QWidget):
     def text_value(self):
         if not self.value_list:
             return self.value
-        return self.value_list[(self.value-self.min_value)/self.step]
+        return self.value_list[(self.value-self.min_value)//self.step]
 
 #    def setEnabled(self, state):
 #        QtWidgets.QWidget.setEnabled(self, state)
@@ -2551,11 +2551,11 @@ class Dial(QtWidgets.QWidget):
             qp.rotate(120)
             if self.scale&1:
                 ratio = 150./(self.scale/2+1)
-                for i in range(self.min_value+self.step, self.scale/2+2*self.step, self.step):
+                for i in range(self.min_value+self.step, self.scale//2+2*self.step, self.step):
                     qp.rotate(ratio)
                     qp.drawLine(l_pos, 0, l_len, 0)
                 ratio = 150./(self.scale/2)
-                for i in range(self.scale/2+2*self.step, self.max_value, self.step):
+                for i in range(self.scale//2+2*self.step, self.max_value, self.step):
                     qp.rotate(ratio)
                     qp.drawLine(l_pos, 0, l_len, 0)
             else:
