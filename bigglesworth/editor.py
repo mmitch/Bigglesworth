@@ -374,7 +374,7 @@ class ProgLabelTextWidget(BaseTextWidget):
         else:
             readable = chr(char)
         self.text_list[pos] = readable
-        self.text = self.text_list.join('')
+        self.text = ''.join(self.text_list)
         self.update()
 
     def keyPressEvent(self, event):
