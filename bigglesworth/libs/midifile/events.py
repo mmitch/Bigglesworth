@@ -118,13 +118,11 @@ class NoteEvent(Event):
         return self.data[0]
     def set_pitch(self, val):
         self.data[0] = val
-    pitch = property(get_pitch, set_pitch)
 
     def get_velocity(self):
         return self.data[1]
     def set_velocity(self, val):
         self.data[1] = val
-    velocity = property(get_velocity, set_velocity)
 
 class NoteOnEvent(NoteEvent):
     statusmsg = 0x90
@@ -149,7 +147,6 @@ class AfterTouchEvent(Event):
         return self.data[1]
     def set_value(self, val):
         self.data[1] = val
-    value = property(get_value, set_value)
 
 class ControlChangeEvent(Event):
     __slots__ = ['control', 'value']
@@ -161,13 +158,11 @@ class ControlChangeEvent(Event):
         self.data[0] = val
     def get_control(self):
         return self.data[0]
-    control = property(get_control, set_control)
 
     def set_value(self, val):
         self.data[1] = val
     def get_value(self):
         return self.data[1]
-    value = property(get_value, set_value)
 
 class ProgramChangeEvent(Event):
     __slots__ = ['value']
@@ -179,7 +174,6 @@ class ProgramChangeEvent(Event):
         self.data[0] = val
     def get_value(self):
         return self.data[0]
-    value = property(get_value, set_value)
 
 class ChannelAfterTouchEvent(Event):
     __slots__ = ['value']
@@ -191,7 +185,6 @@ class ChannelAfterTouchEvent(Event):
         self.data[1] = val
     def get_value(self):
         return self.data[1]
-    value = property(get_value, set_value)
 
 class PitchWheelEvent(Event):
     __slots__ = ['pitch']
@@ -205,7 +198,6 @@ class PitchWheelEvent(Event):
         value = pitch + 0x2000
         self.data[0] = value & 0x7F
         self.data[1] = (value >> 7) & 0x7F
-    pitch = property(get_pitch, set_pitch)
 
 class SysexEvent(Event):
     statusmsg = 0xF0
@@ -311,7 +303,6 @@ class SetTempoEvent(MetaEvent):
         self.mpqn = int(float(6e7) / bpm)
     def get_bpm(self):
         return float(6e7) / self.mpqn
-    bpm = property(get_bpm, set_bpm)
 
     def get_mpqn(self):
         assert(len(self.data) == 3)
@@ -319,7 +310,6 @@ class SetTempoEvent(MetaEvent):
         return sum(vals)
     def set_mpqn(self, val):
         self.data = [(val >> (16 - (8 * x)) & 0xFF) for x in range(3)]
-    mpqn = property(get_mpqn, set_mpqn)
 
 class SmpteOffsetEvent(MetaEvent):
     name = 'SMPTE Offset'
@@ -335,25 +325,21 @@ class TimeSignatureEvent(MetaEvent):
         return self.data[0]
     def set_numerator(self, val):
         self.data[0] = val
-    numerator = property(get_numerator, set_numerator)
 
     def get_denominator(self):
         return 2 ** self.data[1]
     def set_denominator(self, val):
         self.data[1] = int(math.log(val, 2))
-    denominator = property(get_denominator, set_denominator)
 
     def get_metronome(self):
         return self.data[2]
     def set_metronome(self, val):
         self.data[2] = val
-    metronome = property(get_metronome, set_metronome)
 
     def get_thirtyseconds(self):
         return self.data[3]
     def set_thirtyseconds(self, val):
         self.data[3] = val
-    thirtyseconds = property(get_thirtyseconds, set_thirtyseconds)
 
 class KeySignatureEvent(MetaEvent):
     __slots__ = ['alternatives', 'minor']
@@ -366,13 +352,11 @@ class KeySignatureEvent(MetaEvent):
         return d - 256 if d > 127 else d
     def set_alternatives(self, val):
         self.data[0] = 256 + val if val < 0 else val
-    alternatives = property(get_alternatives, set_alternatives)
 
     def get_minor(self):
         return self.data[1]
     def set_minor(self, val):
         self.data[1] = val
-    minor = property(get_minor, set_minor)
 
 class SequencerSpecificEvent(MetaEvent):
     name = 'Sequencer Specific'
