@@ -1999,14 +1999,14 @@ class AudioBuffer(QtCore.QBuffer):
             data.append(struct.pack('<h', int(wave_obj.values[s] * .03125)))
         index = wave_obj.index
         self.single_data_list[index].replace(0, 65536, data * 256)
-        self.multi_data.replace(index * 256 * self.multiplier, 256 * self.multiplier, str(data) * self.multiplier)
+        self.multi_data.replace(index * 256 * self.multiplier, 256 * self.multiplier, data * self.multiplier)
 #        self.multi_data.replace((126 + index) * 256 * self.multiplier, 256 * self.multiplier, str(data) * self.multiplier)
 #        if index not in (0, 63):
 #            self.multi_data.replace((126 - index) * 256 * self.multiplier, 256 * self.multiplier, str(data) * self.multiplier)
 #            self.multi_data.replace((252 - index) * 256 * self.multiplier, 256 * self.multiplier, str(data) * self.multiplier)
-        self.multi_data.replace((127 - index) * 256 * self.multiplier, 256 * self.multiplier, str(data) * self.multiplier)
-        self.multi_data.replace((128 + index) * 256 * self.multiplier, 256 * self.multiplier, str(data) * self.multiplier)
-        self.multi_data.replace((255 - index) * 256 * self.multiplier, 256 * self.multiplier, str(data) * self.multiplier)
+        self.multi_data.replace((127 - index) * 256 * self.multiplier, 256 * self.multiplier, data * self.multiplier)
+        self.multi_data.replace((128 + index) * 256 * self.multiplier, 256 * self.multiplier, data * self.multiplier)
+        self.multi_data.replace((255 - index) * 256 * self.multiplier, 256 * self.multiplier, data * self.multiplier)
 
     def size(self):
         return len(self.current_data)
