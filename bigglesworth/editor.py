@@ -639,7 +639,7 @@ class DisplayComboLabelClass(BaseTextWidget):
         self.text_align = QtCore.Qt.AlignHCenter|QtCore.Qt.AlignVCenter
         self.font = QtGui.QFont('Fira Sans', 9)
         self.font_metrics = QtGui.QFontMetrics(self.font)
-        self.setMinimumSize(max([self.font_metrics.width(txt) for txt in self.value_list if isinstance(txt, string)]), self.font_metrics.height())
+        self.setMinimumSize(max([self.font_metrics.width(txt) for txt in self.value_list if isinstance(txt, str)]), self.font_metrics.height())
 #        self.setMaximumSize(self.minimumSize())
 #        if fixed:
 #            self.setMaximumWidth(self.font_metrics.width(self.text) if max_size is None else max_size)
@@ -655,7 +655,7 @@ class DisplayComboLabelClass(BaseTextWidget):
         painter.setPen(self.pen)
         painter.setBrush(self.brush)
         item = self.value_list[self.currentIndex]
-        if isinstance(item, string):
+        if isinstance(item, str):
             painter.setFont(self.font)
             painter.drawText(self.rect(), self.text_align, item)
         else:
